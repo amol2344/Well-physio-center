@@ -25,9 +25,10 @@ app.use(express.json());
 
 // ── Rate Limiter ──────────────────────────────────────────────────────────────
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50,                   // 50 requests per window per IP
+  windowMs: 15 * 60 * 1000,
+  max: 50,
   message: { error: 'Too many requests, please try again later.' },
+  keyGenerator: (req) => req.headers['x-forwarded-for'] || req.ip,
 });
 app.use('/api/', limiter);
 
