@@ -14,9 +14,9 @@ app.use(helmet());
 app.use(cors({
   origin: [
     "https://well-physio-center.vercel.app",
-    "https://well-physio-center-pbgu2cq7w-amol-suresh-patils-projects.vercel.app"
+    "https://well-physio-center-ou7d59s5c-amol-suresh-patils-projects.vercel.app"
   ],
-  methods: ["GET", "POST"]
+  methods: ["GET", "POST", "OPTIONS"]
 }));
 app.use(express.json());
 
