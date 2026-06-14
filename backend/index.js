@@ -11,7 +11,13 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://well-physio-center.vercel.app",
+    "https://well-physio-center-pbgu2cq7w-amol-suresh-patils-projects.vercel.app"
+  ],
+  methods: ["GET", "POST"]
+}));
 app.use(express.json());
 
 app.use('/api', emailRoutes);
