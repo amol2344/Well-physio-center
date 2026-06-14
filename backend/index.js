@@ -13,7 +13,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Handle CORS preflight for all routes
-app.options('*', (req, res) => {
+app.options('(.*)', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
