@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "./ChatBot.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = "";
 
 const QUICK_QUESTIONS = [
   "What conditions do you treat?",
