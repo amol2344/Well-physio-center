@@ -10,7 +10,8 @@ const app = express();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-app.use(helmet());
+// To this:
+app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({
   origin: function(origin, callback) {
     // Allow all vercel.app domains and localhost
