@@ -7,6 +7,7 @@ import ErrorBoundary from "./components/Feedback/ErrorBoundary";
 import Loader from "./components/Shared/Loader";
 import ScrollToTop from "./components/Shared/ScrollToTop";
 import { Toaster } from "react-hot-toast";
+import ChatBot from "./components/Shared/Chatbot";
 
 // Public pages
 import Home from "./pages/Home";
@@ -82,6 +83,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <ChatBot/>
         <WhatsAppIcon />
         <Toaster position="top-right" reverseOrder={false} />
       </div>
