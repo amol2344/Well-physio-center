@@ -10,29 +10,29 @@ const app = express();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-// To this:
 app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow all vercel.app domains and localhost
-    if (!origin || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ["GET", "POST", "OPTIONS"]
-}));
+
+// Handle CORS preflight for all routes
+app.options('*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.status(200).end();
+});
+
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-app.use('/api', emailRoutes);
-
+// ── Rate Limiter ──────────────────────────────────────────────────────────────
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 50,                   // 50 requests per window per IP
-  message: { error: "Too many requests, please try again later." },
+  message: { error: 'Too many requests, please try again later.' },
 });
-app.use("/api/", limiter);
+app.use('/api/', limiter);
+
+// ── Routes ────────────────────────────────────────────────────────────────────
+app.use('/api', emailRoutes);
 
 // ── Physio System Prompt ──────────────────────────────────────────────────────
 const PHYSIO_SYSTEM_PROMPT = `You are the virtual assistant for Wellness Physio Center, a leading physiotherapy clinic in Mumbai, India. You help patients with queries about the clinic and physiotherapy in general.
@@ -61,26 +61,27 @@ IMPORTANT RULES:
 - Respond in English by default; if the patient writes in Hindi or Marathi, respond in the same language.`;
 
 // ── Chat Route ────────────────────────────────────────────────────────────────
-app.post("/api/chat", async (req, res) => {
+app.post('/api/chat', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
   const { messages } = req.body;
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: "Messages array is required." });
+    return res.status(400).json({ error: 'Messages array is required.' });
   }
 
-  // Validate message format
   const sanitized = messages
-    .filter((m) => m.role && m.content && typeof m.content === "string")
-    .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) })) // cap length
-    .slice(-20); // keep last 20 messages to avoid token overflow
+    .filter((m) => m.role && m.content && typeof m.content === 'string')
+    .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }))
+    .slice(-20);
 
   if (sanitized.length === 0) {
-    return res.status(400).json({ error: "No valid messages provided." });
+    return res.status(400).json({ error: 'No valid messages provided.' });
   }
 
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      model: 'claude-sonnet-4-6',
       max_tokens: 600,
       system: PHYSIO_SYSTEM_PROMPT,
       messages: sanitized,
@@ -89,13 +90,13 @@ app.post("/api/chat", async (req, res) => {
     const reply = response.content[0]?.text || "Sorry, I couldn't generate a response.";
     return res.json({ reply });
   } catch (err) {
-    console.error("Anthropic API error:", err.message);
-    return res.status(500).json({ error: "Failed to get a response. Please try again." });
+    console.error('Anthropic API error:', err.message);
+    return res.status(500).json({ error: 'Failed to get a response. Please try again.' });
   }
 });
 
 // ── Health Check ──────────────────────────────────────────────────────────────
-app.get("/api/health", (_, res) => res.json({ status: "ok" }));
+app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 
-// Remove app.listen for Vercel
+// ── Vercel Export ─────────────────────────────────────────────────────────────
 module.exports = app;
