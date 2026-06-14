@@ -1,11 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const Anthropic = require('@anthropic-ai/sdk');
 const emailRoutes = require('./routes/emailRoutes');
 
 const app = express();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
@@ -46,7 +44,10 @@ app.post('/api/chat', async (req, res) => {
 
   const sanitized = messages
     .filter((m) => m.role && m.content && typeof m.content === 'string')
-    .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }))
+    .map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content.slice(0, 1000) }],
+    }))
     .slice(-20);
 
   if (sanitized.length === 0) {
@@ -54,17 +55,29 @@ app.post('/api/chat', async (req, res) => {
   }
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 600,
-      system: PHYSIO_SYSTEM_PROMPT,
-      messages: sanitized,
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: PHYSIO_SYSTEM_PROMPT }] },
+          contents: sanitized,
+        }),
+      }
+    );
 
-    const reply = response.content[0]?.text || "Sorry, I couldn't generate a response.";
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Gemini API error:', JSON.stringify(data));
+      return res.status(500).json({ error: 'Failed to get a response. Please try again.' });
+    }
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
     return res.json({ reply });
   } catch (err) {
-    console.error('Anthropic API error:', err.message);
+    console.error('Gemini API error:', err.message);
     return res.status(500).json({ error: 'Failed to get a response. Please try again.' });
   }
 });
