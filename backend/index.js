@@ -12,10 +12,14 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({
-  origin: [
-    "https://well-physio-center.vercel.app",
-    "https://well-physio-center-ou7d59s5c-amol-suresh-patils-projects.vercel.app"
-  ],
+  origin: function(origin, callback) {
+    // Allow all vercel.app domains and localhost
+    if (!origin || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ["GET", "POST", "OPTIONS"]
 }));
 app.use(express.json());
