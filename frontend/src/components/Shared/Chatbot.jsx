@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "./chatbot.css";
 
-const API_URL = "https://vercel.com/amol-suresh-patils-projects/well-physio-center-gl5u/9UnWyFUVyD1S4jsn7FKv2gyJBuAZ";
-
+const API_URL = "";
 const QUICK_QUESTIONS = [
   "What conditions do you treat?",
   "How do I book an appointment?",
