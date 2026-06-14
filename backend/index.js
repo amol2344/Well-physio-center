@@ -1,37 +1,17 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const Anthropic = require('@anthropic-ai/sdk');
 const emailRoutes = require('./routes/emailRoutes');
 
 const app = express();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// ── Middleware ────────────────────────────────────────────────────────────────
-app.use(helmet({ crossOriginResourcePolicy: false }));
-
-// Handle CORS preflight for all routes
-
-
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// ── Rate Limiter ──────────────────────────────────────────────────────────────
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 50,
-
-  message: { error: 'Too many requests, please try again later.' },
-  keyGenerator: (req) => req.headers['x-forwarded-for'] || req.ip,
-});
-app.use('/api/', limiter);
-
-// ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api', emailRoutes);
 
-// ── Physio System Prompt ──────────────────────────────────────────────────────
 const PHYSIO_SYSTEM_PROMPT = `You are the virtual assistant for Wellness Physio Center, a leading physiotherapy clinic in Mumbai, India. You help patients with queries about the clinic and physiotherapy in general.
 
 ABOUT THE CLINIC:
@@ -57,10 +37,7 @@ IMPORTANT RULES:
 - If asked who you are, introduce yourself as the Wellness Physio Center virtual assistant.
 - Respond in English by default; if the patient writes in Hindi or Marathi, respond in the same language.`;
 
-// ── Chat Route ────────────────────────────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
   const { messages } = req.body;
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -92,8 +69,6 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// ── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 
-// ── Vercel Export ─────────────────────────────────────────────────────────────
 module.exports = app;
