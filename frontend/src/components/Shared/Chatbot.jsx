@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import "./ChatBot.css";
+import "./chatBot.css";
 
 const API_URL = "";
 
