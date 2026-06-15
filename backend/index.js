@@ -76,8 +76,15 @@ console.log("Received Messages:", messages);
   } catch (err) {
   console.error("FULL ERROR:", err);
 
+  if (err.status === 429) {
+    return res.json({
+      reply:
+        "Our AI assistant is temporarily busy. Please try again in a minute or contact the clinic directly."
+    });
+  }
+
   return res.status(500).json({
-    error: err.message,
+    error: err.message
   });
 }
 });
