@@ -117,5 +117,10 @@ app.get('/', (req, res) => {
     message: 'Backend is running',
   });
 });
-
+app.get('/api/test-key', (req, res) => {
+  res.json({
+    prefix: process.env.GEMINI_API_KEY?.substring(0, 10),
+    length: process.env.GEMINI_API_KEY?.length
+  });
+});
 module.exports = app;
