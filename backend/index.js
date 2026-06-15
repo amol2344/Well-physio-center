@@ -45,7 +45,7 @@ IMPORTANT RULES:
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
-
+console.log("Received Messages:", messages);
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({
         error: 'Messages array is required.',
@@ -86,4 +86,9 @@ app.get('/api/health', (_, res) => {
   res.json({ status: 'ok' });
 });
 console.log("Gemini Key Exists:", !!process.env.GEMINI_API_KEY);
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Backend is running'
+  });
+});
 module.exports = app;
