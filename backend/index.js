@@ -74,16 +74,16 @@ app.post('/api/chat', async (req, res) => {
 
     return res.json({ reply });
   } catch (err) {
-    console.error('Gemini Error:', err);
+  console.error("FULL ERROR:", err);
 
-    return res.status(500).json({
-      error: err.message || 'Failed to get a response.',
-    });
-  }
+  return res.status(500).json({
+    error: err.message,
+  });
+}
 });
 
 app.get('/api/health', (_, res) => {
   res.json({ status: 'ok' });
 });
-
+console.log("Gemini Key Exists:", !!process.env.GEMINI_API_KEY);
 module.exports = app;
