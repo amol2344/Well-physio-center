@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "./chatbot.css";
 
-const API_URL = "https://well-physio-center-uhri.vercel.app";
+const API_URL = import.meta.env.VITE_API_URL || "";
 const QUICK_QUESTIONS = [
   "What conditions do you treat?",
   "How do I book an appointment?",
