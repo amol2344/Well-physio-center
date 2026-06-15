@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const emailRoutes = require('./routes/emailRoutes');
 
 const app = express();
@@ -9,6 +10,12 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 app.use('/api', emailRoutes);
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const model = genAI.getGenerativeModel({
+  model: 'gemini-1.5-flash',
+});
 
 const PHYSIO_SYSTEM_PROMPT = `You are the virtual assistant for Wellness Physio Center, a leading physiotherapy clinic in Mumbai, India. You help patients with queries about the clinic and physiotherapy in general.
 
@@ -36,52 +43,47 @@ IMPORTANT RULES:
 - Respond in English by default; if the patient writes in Hindi or Marathi, respond in the same language.`;
 
 app.post('/api/chat', async (req, res) => {
-  const { messages } = req.body;
-
-  if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: 'Messages array is required.' });
-  }
-
-  const sanitized = messages
-    .filter((m) => m.role && m.content && typeof m.content === 'string')
-    .map((m) => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content.slice(0, 1000) }],
-    }))
-    .slice(-20);
-
-  if (sanitized.length === 0) {
-    return res.status(400).json({ error: 'No valid messages provided.' });
-  }
-
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: PHYSIO_SYSTEM_PROMPT }] },
-          contents: sanitized,
-        }),
-      }
-    );
+    const { messages } = req.body;
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('Gemini API error:', JSON.stringify(data));
-      return res.status(500).json({ error: 'Failed to get a response. Please try again.' });
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({
+        error: 'Messages array is required.',
+      });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
+    const prompt = messages
+      .filter(
+        (m) =>
+          m &&
+          m.role &&
+          m.content &&
+          typeof m.content === 'string'
+      )
+      .slice(-15)
+      .map((m) => `${m.role}: ${m.content}`)
+      .join('\n');
+
+    const result = await model.generateContent(
+      `${PHYSIO_SYSTEM_PROMPT}\n\nConversation:\n${prompt}`
+    );
+
+    const reply =
+      result?.response?.text() ||
+      "Sorry, I couldn't generate a response.";
+
     return res.json({ reply });
   } catch (err) {
-    console.error('Gemini API error:', err.message);
-    return res.status(500).json({ error: 'Failed to get a response. Please try again.' });
+    console.error('Gemini Error:', err);
+
+    return res.status(500).json({
+      error: err.message || 'Failed to get a response.',
+    });
   }
 });
 
-app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
+app.get('/api/health', (_, res) => {
+  res.json({ status: 'ok' });
+});
 
 module.exports = app;
