@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { GoogleGenAI } = require('@google/genai');
 const emailRoutes = require('./routes/emailRoutes');
 
 const app = express();
@@ -9,6 +10,10 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 app.use('/api', emailRoutes);
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 const PHYSIO_SYSTEM_PROMPT = `You are the virtual assistant for Wellness Physio Center, a leading physiotherapy clinic in Mumbai, India. You help patients with queries about the clinic and physiotherapy in general.
 
@@ -59,46 +64,25 @@ app.post('/api/chat', async (req, res) => {
       .map((m) => `${m.role}: ${m.content}`)
       .join('\n');
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `${PHYSIO_SYSTEM_PROMPT}\n\nConversation:\n${prompt}`,
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('Gemini API Error:', JSON.stringify(data, null, 2));
-
-      return res.status(response.status).json({
-        error:
-          data?.error?.message ||
-          'Failed to get a response from Gemini.',
-      });
-    }
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: `${PHYSIO_SYSTEM_PROMPT}\n\nConversation:\n${prompt}`,
+    });
 
     const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Sorry, I couldn't generate a response.";
+      result.text || "Sorry, I couldn't generate a response.";
 
     return res.json({ reply });
+
   } catch (err) {
     console.error('FULL ERROR:', err);
+
+    if (err.status === 429) {
+      return res.json({
+        reply:
+          'Our AI assistant is temporarily busy. Please try again in a minute or contact the clinic directly.',
+      });
+    }
 
     return res.status(500).json({
       error: err.message || 'Internal Server Error',
@@ -117,10 +101,5 @@ app.get('/', (req, res) => {
     message: 'Backend is running',
   });
 });
-app.get('/api/test-key', (req, res) => {
-  res.json({
-    prefix: process.env.GEMINI_API_KEY?.substring(0, 10),
-    length: process.env.GEMINI_API_KEY?.length
-  });
-});
+
 module.exports = app;
