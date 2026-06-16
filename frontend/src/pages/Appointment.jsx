@@ -764,11 +764,12 @@ const Appointment = () => {
               <div className="space-y-3 text-gray-700">
                 <p className="font-semibold text-gray-900">Wellness Physio Center</p>
                 <p className="text-sm text-gray-600">
-                  Shop no 06, Building number 12, Dignity CHS,
+                 PRO-KINETIC PHYSIOTHERAPY CENTER, Opposite MMA Housing Society,
                   <br />
-                  Near Kedarnath Mandir,
+                  Mahad MIDC,
                   <br />
-                  Nehru Nagar, Kurla East
+                Raigad District, Maharashtra (Pin: 402309)
+Clinic Timings
                 </p>
               </div>
             </InfoCard>

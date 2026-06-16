@@ -48,7 +48,7 @@ const Exercises = () => {
       category: "knee",
       image: StaticQuadsImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Orthopedic" },
+      therapist: { name: "Dr. Truptti", specialty: "Orthopedic" },
     },
     {
       id: 2,
@@ -58,7 +58,7 @@ const Exercises = () => {
       category: "knee",
       image: LungesImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Sports Medicine" },
+      therapist: { name: "Dr. Truptti", specialty: "Sports Medicine" },
     },
     {
       id: 3,
@@ -68,7 +68,7 @@ const Exercises = () => {
       category: "knee",
       image: WallSquatsImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Geriatric" },
+      therapist: { name: "Dr. Truptti", specialty: "Geriatric" },
     },
     {
       id: 4,
@@ -78,7 +78,7 @@ const Exercises = () => {
       category: "knee",
       image: ClamShellsImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Orthopedic" },
+      therapist: { name: "Dr. Truptti", specialty: "Orthopedic" },
     },
     {
       id: 5,
@@ -88,7 +88,7 @@ const Exercises = () => {
       category: "knee",
       image: SquatsImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Sports Medicine" },
+      therapist: { name: "Dr. Truptti", specialty: "Sports Medicine" },
     },
     {
       id: 6,
@@ -98,7 +98,7 @@ const Exercises = () => {
       category: "knee",
       image: SideWalkImg,
       equipment: ["Resistance Band"],
-      therapist: { name: "Dr. Ashwini", specialty: "Geriatric" },
+      therapist: { name: "Dr. Truptti", specialty: "Geriatric" },
     },
     {
       id: 7,
@@ -108,7 +108,7 @@ const Exercises = () => {
       category: "back",
       image: CatCowImg,
       equipment: ["Yoga Mat"],
-      therapist: { name: "Dr. Ashwini", specialty: "Chiropractic" },
+      therapist: { name: "Dr. Truptti", specialty: "Chiropractic" },
     },
     {
       id: 8,
@@ -118,7 +118,7 @@ const Exercises = () => {
       category: "shoulder",
       image: PendulumImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Sports Medicine" },
+      therapist: { name: "Dr. Truptti", specialty: "Sports Medicine" },
     },
     {
       id: 9,
@@ -128,7 +128,7 @@ const Exercises = () => {
       category: "neck",
       image: ChinTucksImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Physical Therapy" },
+      therapist: { name: "Dr. Truptti", specialty: "Physical Therapy" },
     },
     {
       id: 10,
@@ -138,7 +138,7 @@ const Exercises = () => {
       category: "post-surgery",
       image: AnklePumpsImg,
       equipment: ["None"],
-      therapist: { name: "Dr. Ashwini", specialty: "Rehabilitation" },
+      therapist: { name: "Dr. Truptti", specialty: "Rehabilitation" },
     },
   ];
 
