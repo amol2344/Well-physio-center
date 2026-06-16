@@ -116,58 +116,6 @@ export const doctors = [
   },
   {
     id: 3,
-    name: "Dr. Priya V. Desai (PT)",
-    title: "Pediatric & Women's Health Physiotherapist",
-    specialty: "Pediatric & Women's Health Physiotherapy",
-    seoTitle: "Dr. Priya V. Desai - Pediatric Physiotherapist in Mahad, Raigad",
-    seoDescription:
-      "Specialized pediatric and women's health physiotherapist at PRO-KINETIC PHYSIOTHERAPY CENTER in Mahad offering care for children with developmental delays, cerebral palsy, and postnatal rehabilitation.",
-    slug: "dr-priya-desai-pediatric-physiotherapist",
-    areasServed: ["Mahad", "Raigad District", "Maharashtra"],
-    focusKeywords: [
-      "pediatric physiotherapist Mahad",
-      "women's health physiotherapy",
-      "postnatal rehabilitation",
-      "cerebral palsy treatment",
-      "developmental delay physiotherapy",
-    ],
-    bio: "Dr. Priya V. Desai (PT) is a dedicated pediatric and women's health physiotherapist at PRO-KINETIC PHYSIOTHERAPY CENTER, offering specialized care for children with developmental challenges and women's postnatal recovery.",
-    longBio:
-      "Dr. Priya V. Desai (PT) has a deep passion for improving quality of life in children and women through targeted physiotherapy. She has extensive experience managing pediatric conditions such as cerebral palsy, developmental delays, and muscular dystrophy. She also offers comprehensive postnatal rehabilitation programs, pelvic floor therapy, and antenatal care to support women at every stage of their journey.",
-    qualifications: [
-      "Bachelor's in Physiotherapy (BPT)",
-      "Master's in Pediatric Physiotherapy (MPT - Pediatrics)",
-    ],
-    specializations: [
-      "Pediatric Developmental Physiotherapy",
-      "Cerebral Palsy & Muscular Dystrophy Management",
-      "Postnatal & Pelvic Floor Rehabilitation",
-      "Antenatal Exercise Programs",
-      "Sensory Integration Therapy",
-    ],
-    experience: "6+ years",
-    certificate: DrCertificateImage,
-    education: "Master's in Physiotherapy - Pediatrics (MPT)",
-    certifications: [
-      "Certified Pediatric Physiotherapist",
-      "Pelvic Floor Rehabilitation Specialist",
-    ],
-    contact: {
-      phone: "+91-8460286466",
-      hours: "Mon - Sat: Open until 8:00 PM",
-    },
-    address:
-      "PRO-KINETIC PHYSIOTHERAPY CENTER, Opposite MMA Housing Society, Mahad MIDC, Raigad District, Maharashtra (Pin: 402309)",
-    image: DrTruptiImage,
-    languages: ["English", "Marathi", "Hindi"],
-    consultationFee: "₹500",
-    availability: "Monday through Saturday",
-    consultationLinks: {
-      inClinic: "https://www.justdial.com/Raigad-Maharashtra/BFit-Physiotherapy-Clinic-Mahad/9999P2141-2141-230331002955-V5B3_BZDET",
-    },
-  },
-  {
-    id: 4,
     name: "Dr. Amit K. Joshi (PT)",
     title: "Geriatric & Cardiopulmonary Physiotherapist",
     specialty: "Geriatric & Cardiopulmonary Physiotherapy",
