@@ -84,7 +84,9 @@ function App() {
         </main>
         <Footer />
         <Chatbot/>
-        <WhatsAppIcon />
+      <div style={{ marginBottom: '70px' }}>
+  <WhatsAppIcon />
+</div>
         <Toaster position="top-right" reverseOrder={false} />
       </div>
     </ErrorBoundary>
