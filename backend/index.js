@@ -107,4 +107,11 @@ app.get('/api/debug-key', (req, res) => {
     length: process.env.GEMINI_API_KEY?.length,
   });
 });
+app.get("/api/debug-key", (req, res) => {
+  res.json({
+    exists: !!process.env.GEMINI_API_KEY,
+    prefix: process.env.GEMINI_API_KEY?.substring(0, 10),
+    length: process.env.GEMINI_API_KEY?.length
+  });
+});
 module.exports = app;
