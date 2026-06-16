@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { GoogleGenAI } = require('@google/genai');
 const emailRoutes = require('./routes/emailRoutes');
 
 const app = express();
@@ -10,10 +9,6 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 app.use('/api', emailRoutes);
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
 
 const PHYSIO_SYSTEM_PROMPT = `You are the virtual assistant for Wellness Physio Center, a leading physiotherapy clinic in Mumbai, India. You help patients with queries about the clinic and physiotherapy in general.
 
@@ -44,75 +39,57 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
 
-    console.log('Received Messages:', messages);
-
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({
-        error: 'Messages array is required.',
-      });
+      return res.status(400).json({ error: 'Messages array is required.' });
     }
 
-    const prompt = messages
-      .filter(
-        (m) =>
-          m &&
-          m.role &&
-          m.content &&
-          typeof m.content === 'string'
-      )
+    const sanitized = messages
+      .filter((m) => m && m.role && m.content && typeof m.content === 'string')
       .slice(-15)
-      .map((m) => `${m.role}: ${m.content}`)
-      .join('\n');
+      .map((m) => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: m.content.slice(0, 1000),
+      }));
 
-    const result = await ai.models.generateContent({
+    if (sanitized.length === 0) {
+      return res.status(400).json({ error: 'No valid messages provided.' });
+    }
 
-model: 'gemini-1.5-flash-latest',
-      contents: `${PHYSIO_SYSTEM_PROMPT}\n\nConversation:\n${prompt}`,
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192',
+        messages: [
+          { role: 'system', content: PHYSIO_SYSTEM_PROMPT },
+          ...sanitized,
+        ],
+        max_tokens: 600,
+        temperature: 0.7,
+      }),
     });
 
-    const reply =
-      result.text || "Sorry, I couldn't generate a response.";
+    const data = await response.json();
 
+    if (!response.ok) {
+      console.error('Groq API error:', JSON.stringify(data));
+      return res.status(500).json({ error: 'Failed to get a response. Please try again.' });
+    }
+
+    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't generate a response.";
     return res.json({ reply });
 
   } catch (err) {
     console.error('FULL ERROR:', err);
-
-    if (err.status === 429) {
-      return res.json({
-        reply:
-          'Our AI assistant is temporarily busy. Please try again in a minute or contact the clinic directly.',
-      });
-    }
-
-    return res.status(500).json({
-      error: err.message || 'Internal Server Error',
-    });
+    return res.status(500).json({ error: err.message || 'Internal Server Error' });
   }
 });
 
-app.get('/api/health', (_, res) => {
-  res.json({ status: 'ok' });
-});
+app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 
-console.log('Gemini Key Exists:', !!process.env.GEMINI_API_KEY);
+app.get('/', (req, res) => res.json({ message: 'Backend is running' }));
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Backend is running',
-  });
-});
-app.get('/api/debug-key', (req, res) => {
-  res.json({
-    prefix: process.env.GEMINI_API_KEY?.substring(0, 10),
-    length: process.env.GEMINI_API_KEY?.length,
-  });
-});
-app.get("/api/debug-key", (req, res) => {
-  res.json({
-    exists: !!process.env.GEMINI_API_KEY,
-    prefix: process.env.GEMINI_API_KEY?.substring(0, 10),
-    length: process.env.GEMINI_API_KEY?.length
-  });
-});
 module.exports = app;
