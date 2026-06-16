@@ -8,8 +8,8 @@ const Footer = () => {
     {
       id: "email",
       icon: <FiMail className="text-teal-500 text-xl" />,
-      text: "Wellness Physio Centerstudio@gmail.com",
-      link: "mailto:Wellness Physio Centerstudio@gmail.com",
+      text: "wellnessphysiocenters@gmail.com",
+      link: "mailto:wellnessphysiocenters@gmail.com",
     },
     {
       id: "phone",

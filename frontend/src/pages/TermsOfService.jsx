@@ -196,7 +196,7 @@ const TermsOfService = () => {
                 <div className="space-y-2 text-gray-700">
                   <div className="flex items-center">
                     <FiMail className="w-4 h-4 text-[#76B041] mr-2" />
-                    <span>Wellness Physio Centerstudio@gmail.com</span>
+                    <span>wellnessphysiocenters@gmail.com</span>
                   </div>
                   <div className="flex items-center">
                     <FiPhone className="w-4 h-4 text-[#76B041] mr-2" />

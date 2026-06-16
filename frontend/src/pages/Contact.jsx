@@ -207,7 +207,7 @@ const Contact = () => {
               "@type": "ContactPoint",
               "telephone": "+91-8460286466",
               "contactType": "Customer Service",
-              "email": "Wellness Physio Centerstudio@gmail.com",
+              "email": "wellnessphysiocenters@gmail.com",
               "areaServed": "IN",
               "availableLanguage": ["English", "Hindi", "Marathi"]
             },
@@ -283,7 +283,7 @@ const Contact = () => {
                   <h3 className="text-lg font-semibold text-slate-900 mb-2">
                     Email Us
                   </h3>
-                  <p className="text-slate-700">Wellness Physio Centerstudio@gmail.com</p>
+                  <p className="text-slate-700">wellnessphysiocenters@gmail.com</p>
                 </div>
               </div>
             </div>

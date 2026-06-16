@@ -779,13 +779,13 @@ Clinic Timings
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="font-medium text-gray-600">Phone</span>
                   <span className="font-semibold text-gray-900">
-                    9004684173
+                    8460286466
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="font-medium text-gray-600">Email</span>
                   <span className="font-semibold text-gray-900 text-sm">
-                    stridewellstudio@gmail.com
+                    wellnessphysiocenters@gmail.com
                   </span>
                 </div>
               </div>
