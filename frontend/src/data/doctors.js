@@ -101,7 +101,7 @@ export const doctors = [
       "Kinesio Taping Practitioner",
     ],
     contact: {
-      phone: "+91-8460286466",
+      phone: "+91-875690387569",
       hours: "Mon - Sat: Open until 8:00 PM",
     },
     address:
@@ -153,7 +153,7 @@ export const doctors = [
       "Geriatric Care Physiotherapy Certification",
     ],
     contact: {
-      phone: "+91-8460286466",
+      phone: "+91-9876087932",
       hours: "Mon - Sat: Open until 8:00 PM",
     },
     address:
