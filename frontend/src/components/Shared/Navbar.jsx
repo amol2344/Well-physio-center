@@ -4,8 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 import { FiMenu, FiX, FiHeart } from "react-icons/fi";
 import logo from "../../assets/logo.png";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
-import { useAuth } from "../context/AuthContext";
+import { auth } from "../../firebase/firebase";
+import { useAuth } from "../../context/AuthContext";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
