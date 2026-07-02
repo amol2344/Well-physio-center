@@ -4,9 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './main.css';
 import Loader from './components/Shared/Loader';
-import { AuthProvider } from "./context/AuthContext";
-
-
+import { AuthProvider } from './context/AuthContext';
 const Root = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
