@@ -46,7 +46,7 @@ const withLoader = (Component) => (
 );
 function App() {
   return (
-    <AuthProvider>
+    
       <ErrorBoundary>
         <div className="flex flex-col min-h-screen">
           <Navbar />
@@ -96,7 +96,7 @@ function App() {
           <Toaster position="top-right" reverseOrder={false} />
         </div>
       </ErrorBoundary>
-    </AuthProvider>
+  
   );
 }
 
