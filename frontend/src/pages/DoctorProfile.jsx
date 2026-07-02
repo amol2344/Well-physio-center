@@ -166,10 +166,13 @@ const DoctorProfile = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-600 to-orange-600 hover:from-orange-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                  <FiCalendar className="w-5 h-5" />
-                  Book Consultation
-                </button>
+                <Link
+  to="/book-appointment"
+  className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-600 to-orange-600 hover:from-orange-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+>
+  <FiCalendar className="w-5 h-5" />
+  Book Consultation
+</Link>
                 <a
                   href={`tel:${doctor.contact.phone}`}
                   className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-white border-2 border-teal-200 text-teal-700 hover:bg-teal-50 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"

@@ -28,7 +28,7 @@ import TermsOfService from "./pages/TermsOfService";
 import ErgonomicBlog from "./pages/Blog/ErgonomicBlog";
 import KneeOsteoarthritisBlog from "./pages/Blog/KneeOsteoarthritisBlog";
 import BoneHealthBlog from "./pages/Blog/BoneHealthBlog";
-
+import app from "./firebase/firebase";
 // Loader wrapper component
 const withLoader = (Component) => (
   <Suspense
@@ -41,7 +41,6 @@ const withLoader = (Component) => (
     <Component />
   </Suspense>
 );
-
 function App() {
   return (
     <ErrorBoundary>
