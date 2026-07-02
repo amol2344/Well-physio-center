@@ -3,13 +3,15 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FiMenu, FiX, FiHeart } from "react-icons/fi";
 import logo from "../../assets/logo.png";
-
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
+import { useAuth } from "../context/AuthContext";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navbarRef = useRef(null);
-
+ const { currentUser } = useAuth();
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -60,6 +62,16 @@ const Navbar = () => {
           : "bg-slate-50/95 backdrop-blur-lg py-5 border-b border-transparent"
       }`}
     >
+        <nav>
+      {currentUser ? (
+        <>
+          <span>{currentUser.email}</span>
+          <button onClick={() => signOut(auth)}>Log Out</button>
+        </>
+      ) : (
+        <span>Not logged in</span>
+      )}
+    </nav>
      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Logo */}

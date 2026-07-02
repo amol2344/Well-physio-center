@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './main.css';
 import Loader from './components/Shared/Loader';
+import { AuthProvider } from "./context/AuthContext";
 
 
 const Root = () => {
@@ -26,7 +27,8 @@ const Root = () => {
           <Loader size="xl" color="blue" />
         </div>
       )}
-      <App />
+      <AuthProvider><App /></AuthProvider>
+      
     </>
   );
 };
