@@ -8,6 +8,9 @@ import Loader from "./components/Shared/Loader";
 import ScrollToTop from "./components/Shared/ScrollToTop";
 import { Toaster } from "react-hot-toast";
 import Chatbot from "./components/Shared/Chatbot";
+import { AuthProvider } from "./context/AuthContext";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 
 // Public pages
 import Home from "./pages/Home";
@@ -43,50 +46,57 @@ const withLoader = (Component) => (
 );
 function App() {
   return (
-    <ErrorBoundary>
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow">
-          <ScrollToTop behavior="smooth" />
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={withLoader(Home)} />
-            <Route path="/blog" element={withLoader(Blog)} />
-            <Route path="/blog/ergonomic" element={withLoader(ErgonomicBlog)} />
-            <Route
-              path="/blog/knee-osteoarthritis"
-              element={withLoader(KneeOsteoarthritisBlog)}
-            />
-            <Route
-              path="/blog/bone-health"
-              element={withLoader(BoneHealthBlog)}
-            />
+    <AuthProvider>
+      <ErrorBoundary>
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow">
+            <ScrollToTop behavior="smooth" />
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={withLoader(Home)} />
+              <Route path="/blog" element={withLoader(Blog)} />
+              <Route path="/blog/ergonomic" element={withLoader(ErgonomicBlog)} />
+              <Route
+                path="/blog/knee-osteoarthritis"
+                element={withLoader(KneeOsteoarthritisBlog)}
+              />
+              <Route
+                path="/blog/bone-health"
+                element={withLoader(BoneHealthBlog)}
+              />
 
-            <Route path="/experts" element={withLoader(Experts)} />
-            <Route path="/doctors/:id" element={withLoader(DoctorProfile)} />
-            <Route path="/exercises" element={withLoader(Exercises)} />
-            <Route path="/about-us" element={withLoader(About)} />
-            <Route path="/contact-us" element={withLoader(Contact)} />
-            <Route path="/book-appointment" element={withLoader(Appointment)} />
-            <Route
-              path="/doorstep-physiotherapy"
-              element={withLoader(Doorstep)}
-            />
-            <Route path="/privacy-policy" element={withLoader(PrivacyPolicy)} />
-            <Route
-              path="/terms-of-service"
-              element={withLoader(TermsOfService)}
-            />
-            {/* 404 */}
-            <Route path="*" element={withLoader(NotFound)} />
-          </Routes>
-        </main>
-        <Footer />
-        <Chatbot/>
-        <WhatsAppIcon />
-        <Toaster position="top-right" reverseOrder={false} />
-      </div>
-    </ErrorBoundary>
+              <Route path="/experts" element={withLoader(Experts)} />
+              <Route path="/doctors/:id" element={withLoader(DoctorProfile)} />
+              <Route path="/exercises" element={withLoader(Exercises)} />
+              <Route path="/about-us" element={withLoader(About)} />
+              <Route path="/contact-us" element={withLoader(Contact)} />
+              <Route path="/book-appointment" element={withLoader(Appointment)} />
+              <Route
+                path="/doorstep-physiotherapy"
+                element={withLoader(Doorstep)}
+              />
+              <Route path="/privacy-policy" element={withLoader(PrivacyPolicy)} />
+              <Route
+                path="/terms-of-service"
+                element={withLoader(TermsOfService)}
+              />
+
+              {/* Auth routes */}
+              <Route path="/login" element={withLoader(Login)} />
+              <Route path="/signup" element={withLoader(Signup)} />
+
+              {/* 404 */}
+              <Route path="*" element={withLoader(NotFound)} />
+            </Routes>
+          </main>
+          <Footer />
+          <Chatbot/>
+          <WhatsAppIcon />
+          <Toaster position="top-right" reverseOrder={false} />
+        </div>
+      </ErrorBoundary>
+    </AuthProvider>
   );
 }
 
