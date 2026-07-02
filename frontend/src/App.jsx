@@ -9,8 +9,8 @@ import ScrollToTop from "./components/Shared/ScrollToTop";
 import { Toaster } from "react-hot-toast";
 import Chatbot from "./components/Shared/Chatbot";
 import { AuthProvider } from "./context/AuthContext";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
+import Login from "./components/Shared/Login";
+import Signup from "./components/Shared/Signup";
 
 // Public pages
 import Home from "./pages/Home";
