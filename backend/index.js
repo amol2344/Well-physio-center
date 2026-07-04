@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const emailRoutes = require('./routes/emailRoutes');
-const adminRoutes = require("./routes/Admin");
+const adminRoutes = require("./routes/admin");
 
 
 const app = express();
