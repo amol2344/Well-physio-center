@@ -2,12 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const emailRoutes = require('./routes/emailRoutes');
+const adminRoutes = require("./routes/admin");
+
 
 const app = express();
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
-
+app.use("/api/admin", adminRoutes);
 app.use('/api', emailRoutes);
 
 const PHYSIO_SYSTEM_PROMPT = `You are the virtual assistant for Wellness Physio Center, a leading physiotherapy clinic in Mumbai, India. You help patients with queries about the clinic and physiotherapy in general.
