@@ -6,9 +6,13 @@ if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-const app = admin.initializeApp({
-  credential: admin.cert(serviceAccount),
-});
+// Reuse the existing app if already initialized
+const app =
+  admin.getApps().length > 0
+    ? admin.getApp()
+    : admin.initializeApp({
+        credential: admin.cert(serviceAccount),
+      });
 
 const db = admin.firestore(app);
 const auth = admin.auth(app);
