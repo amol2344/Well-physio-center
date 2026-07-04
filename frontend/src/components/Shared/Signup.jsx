@@ -1,15 +1,36 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../firebase/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, googleProvider, db } from "../../firebase/firebase";
 
 export default function Signup() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Creates the Firestore profile doc. Every new user defaults to "user" —
+  // role upgrades only ever happen through the backend admin endpoint.
+  const createUserDoc = async (user, displayName) => {
+    const userRef = doc(db, "users", user.uid);
+    const existing = await getDoc(userRef);
+    if (!existing.exists()) {
+      await setDoc(userRef, {
+        name: displayName || user.displayName || "",
+        email: user.email,
+        role: "user",
+        createdAt: new Date().toISOString(),
+      });
+    }
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -22,7 +43,9 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(user, { displayName: name });
+      await createUserDoc(user, name);
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -35,7 +58,8 @@ export default function Signup() {
     setError("");
     setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const { user } = await signInWithPopup(auth, googleProvider);
+      await createUserDoc(user, user.displayName);
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -52,6 +76,14 @@ export default function Signup() {
         </h2>
 
         <form onSubmit={handleSignup} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
+          />
           <input
             type="email"
             placeholder="Email"

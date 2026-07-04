@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../firebase/firebase";
+
 const AuthContext = createContext();
 
 export function useAuth() {
@@ -9,17 +11,46 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [profile, setProfile] = useState(null); // { name, email, role }
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    let unsubProfile = null;
+
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      setLoading(false);
+
+      if (unsubProfile) {
+        unsubProfile();
+        unsubProfile = null;
+      }
+
+      if (user) {
+        // Live-subscribe to the user's Firestore doc so role changes
+        // (e.g. an admin promoting them) reflect immediately without re-login.
+        const userRef = doc(db, "users", user.uid);
+        unsubProfile = onSnapshot(userRef, (snap) => {
+          setProfile(snap.exists() ? snap.data() : null);
+          setLoading(false);
+        });
+      } else {
+        setProfile(null);
+        setLoading(false);
+      }
     });
-    return unsubscribe;
+
+    return () => {
+      unsubAuth();
+      if (unsubProfile) unsubProfile();
+    };
   }, []);
 
-  const value = { currentUser };
+  const value = {
+    currentUser,
+    name: profile?.name || currentUser?.displayName || "",
+    role: profile?.role || "user",
+    profile,
+  };
 
   return (
     <AuthContext.Provider value={value}>
