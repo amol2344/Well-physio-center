@@ -10,7 +10,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navbarRef = useRef(null);
-  const { currentUser } = useAuth();
+  const { currentUser, role } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,6 +119,14 @@ const Navbar = () => {
             {/* Auth section */}
             {currentUser ? (
               <div className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200">
+                {role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300"
+                  >
+                    Admin Panel
+                  </Link>
+                )}
                 <span className="flex items-center gap-2 text-sm text-slate-600">
                   <FiUser className="text-teal-600" />
                   {currentUser.email}
