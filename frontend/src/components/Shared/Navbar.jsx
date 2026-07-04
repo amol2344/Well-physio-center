@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiMenu, FiX, FiHeart } from "react-icons/fi";
+import { FiMenu, FiX, FiHeart, FiUser, FiLogOut } from "react-icons/fi";
 import logo from "../../assets/logo.png";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
@@ -11,7 +10,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navbarRef = useRef(null);
- const { currentUser } = useAuth();
+  const { currentUser } = useAuth();
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -53,6 +53,11 @@ const Navbar = () => {
 
   const closeMobileMenu = () => setIsOpen(false);
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    closeMobileMenu();
+  };
+
   return (
     <header
       ref={navbarRef}
@@ -62,16 +67,6 @@ const Navbar = () => {
           : "bg-slate-50/95 backdrop-blur-lg py-5 border-b border-transparent"
       }`}
     >
-        <nav>
-      {currentUser ? (
-        <>
-          <span>{currentUser.email}</span>
-          <button onClick={() => signOut(auth)}>Log Out</button>
-        </>
-      ) : (
-        <span>Not logged in</span>
-      )}
-    </nav>
      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Logo */}
@@ -120,6 +115,39 @@ const Navbar = () => {
                 )}
               </Link>
             ))}
+
+            {/* Auth section */}
+            {currentUser ? (
+              <div className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200">
+                <span className="flex items-center gap-2 text-sm text-slate-600">
+                  <FiUser className="text-teal-600" />
+                  {currentUser.email}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 px-4 py-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300"
+                >
+                  <FiLogOut size={16} />
+                  Log Out
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 ml-2 pl-4 border-l border-slate-200">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-slate-100 transition-all duration-300"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+
             <Link
               to="/book-appointment"
               onClick={closeMobileMenu}
@@ -147,7 +175,7 @@ const Navbar = () => {
         <div
           className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${
             isOpen
-              ? "max-h-[600px] opacity-100 mt-4"
+              ? "max-h-[700px] opacity-100 mt-4"
               : "max-h-0 opacity-0 mt-0"
           }`}
         >
@@ -173,6 +201,41 @@ const Navbar = () => {
                   )}
                 </Link>
               ))}
+
+              {/* Auth section - mobile */}
+              {currentUser ? (
+                <div className="mt-2 px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-sm text-slate-600">
+                    <FiUser className="text-teal-600" />
+                    {currentUser.email}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1 text-red-600 font-medium"
+                  >
+                    <FiLogOut size={16} />
+                    Log Out
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-2 flex gap-3">
+                  <Link
+                    to="/login"
+                    onClick={closeMobileMenu}
+                    className="flex-1 px-6 py-4 rounded-2xl bg-slate-50 text-slate-700 font-medium text-center hover:bg-slate-100 transition-all duration-300"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={closeMobileMenu}
+                    className="flex-1 px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold text-center shadow-lg"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+
               <Link
                 to="/book-appointment"
                 onClick={closeMobileMenu}
