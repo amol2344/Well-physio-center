@@ -6,6 +6,8 @@ import { useAuth } from "../../context/AuthContext";
 export default function RequireRole({ allowed, children }) {
   const { currentUser, role } = useAuth();
 
+  console.log("RequireRole debug:", { currentUser, role, allowed });
+
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
