@@ -6,7 +6,6 @@ if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-// Reuse the existing app if already initialized
 const app =
   admin.getApps().length > 0
     ? admin.getApp()
@@ -17,8 +16,4 @@ const app =
 const db = admin.firestore(app);
 const auth = admin.auth(app);
 
-module.exports = {
-  admin,
-  db,
-  auth,
-};
+module.exports = { admin, db, auth };
