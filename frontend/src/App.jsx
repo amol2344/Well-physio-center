@@ -25,6 +25,8 @@ import DoctorProfile from "./pages/DoctorProfile";
 import Doorstep from "./pages/Doorstep";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import AdminPanel from "./pages/AdminPanel";
+import RequireRole from "./components/Shared/RequireRole";
 
 
 // Blog detail pages
@@ -85,7 +87,14 @@ function App() {
               {/* Auth routes */}
               <Route path="/login" element={withLoader(Login)} />
               <Route path="/signup" element={withLoader(Signup)} />
-
+<Route
+  path="/admin"
+  element={
+    <RequireRole allowed={["admin"]}>
+      <AdminPanel />
+    </RequireRole>
+  }
+/>
               {/* 404 */}
               <Route path="*" element={withLoader(NotFound)} />
             </Routes>
