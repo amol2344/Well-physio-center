@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import toast from "react-hot-toast";
@@ -22,6 +21,8 @@ import {
   FiStar,
   FiHeart,
 } from "react-icons/fi";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "../firebase/firebase";
 
 const PricingCard = ({ plan, onSelectPlan }) => {
   const planIcons = {
@@ -297,7 +298,20 @@ const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
       const planPriceText =
         `Plan Price: ${plan.price}` +
         (plan.period ? ` per ${plan.period}` : "");
-      
+
+      // Save to Firestore so it shows up in the sysadmin dashboard
+      await addDoc(collection(db, "planInquiries"), {
+        userUid: auth.currentUser ? auth.currentUser.uid : null,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        planName: plan.name,
+        planPrice: plan.price,
+        sessionType: formData.sessionType,
+        message: formData.message || "",
+        createdAt: serverTimestamp(),
+      });
+
       // Prepare API request data
       const requestData = {
         type: 'pricing',

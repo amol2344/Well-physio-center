@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet";
@@ -17,6 +16,8 @@ import {
   FiSend
 } from "react-icons/fi";
 import PropTypes from "prop-types";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "../firebase/firebase";
 
 // InfoCard Component with Prop Validation
 const InfoCard = ({ icon: Icon, title, children, delay = 0 }) => (
@@ -621,7 +622,25 @@ const Appointment = () => {
     };
 
     try {
-      // Send request to backend
+      // Save to Firestore so it shows up in the sysadmin (physiotherapist) dashboard
+      await addDoc(collection(db, "appointments"), {
+        patientUid: auth.currentUser ? auth.currentUser.uid : null,
+        patientName: `${formData.firstName} ${formData.lastName}`,
+        patientEmail: formData.email,
+        patientPhone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        address: formData.address,
+        painAreas: selectedPoints,
+        painLevel,
+        quickQuestions,
+        medicalQuestions,
+        additionalInfo: formData.additionalInfo || "",
+        status: "pending", // "pending" | "accepted" | "declined"
+        doctorUid: null, // assigned when a sysadmin accepts it
+        createdAt: serverTimestamp(),
+      });
+
+      // Send request to backend (existing email notification, unchanged)
       const response = await fetch(`${API_URL}/api/send-email`, {
         method: 'POST',
         headers: {

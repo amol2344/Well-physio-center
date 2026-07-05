@@ -9,6 +9,8 @@ import {
   FiSend,
   FiAlertCircle,
 } from "react-icons/fi";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "../firebase/firebase";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -134,7 +136,16 @@ const Contact = () => {
     };
 
     try {
-      // Send request to backend
+      // Save to Firestore so it shows up in the sysadmin dashboard
+      await addDoc(collection(db, "contactSubmissions"), {
+        userUid: auth.currentUser ? auth.currentUser.uid : null,
+        name: sanitizeInput(formData.name),
+        email: sanitizeInput(formData.email),
+        message: sanitizeInput(formData.message),
+        createdAt: serverTimestamp(),
+      });
+
+      // Send request to backend (existing email notification, unchanged)
       const response = await fetch(`${API_URL}/api/send-email`, {
         method: 'POST',
         headers: {

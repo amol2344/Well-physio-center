@@ -27,7 +27,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import AdminPanel from "./pages/AdminPanel";
 import RequireRole from "./components/Shared/RequireRole";
-
+import SysAdminDashboard from "./pages/SysAdminDashboard";
 
 // Blog detail pages
 import ErgonomicBlog from "./pages/Blog/ErgonomicBlog";
@@ -92,6 +92,13 @@ function App() {
   element={
     <RequireRole allowed={["admin"]}>
       <AdminPanel />
+    </RequireRole>
+  }
+/><Route
+  path="/sysadmin-dashboard"
+  element={
+    <RequireRole allowed={["sysadmin"]}>
+      <SysAdminDashboard />
     </RequireRole>
   }
 />
