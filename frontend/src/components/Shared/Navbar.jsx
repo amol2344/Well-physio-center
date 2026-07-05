@@ -139,6 +139,15 @@ const Navbar = () => {
     SysAdmin Panel
   </Link>
 )}
+{role === "user" && (
+  <Link
+    to="/patient-dashboard"
+    onClick={closeMobileMenu}
+    className="block w-full px-6 py-3 rounded-2xl bg-blue-100 text-blue-700 font-semibold text-center"
+  >
+    Patient Dashboard
+  </Link>
+)}
                 <span className="flex items-center gap-2 text-sm text-slate-600">
                   <FiUser className="text-teal-600" />
                   {currentUser.email}
@@ -246,6 +255,14 @@ const Navbar = () => {
         SysAdmin Dashboard
       </Link>
     )}
+    {role === "user" && (
+  <Link
+    to="/patient-dashboard"
+    className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 font-medium hover:bg-blue-200 transition-all duration-300"
+  >
+    Patient Dashboard
+  </Link>
+)}
 
     <div className="px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between">
       <span className="flex items-center gap-2 text-sm text-slate-600">

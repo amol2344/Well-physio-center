@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
 
@@ -12,26 +15,40 @@ export default function Login() {
 
   const navigate = useNavigate();
 
+  // Redirect user based on Firestore role
   const redirectUser = async (user) => {
-    const docRef = doc(db, "users", user.uid);
-    const snap = await getDoc(docRef);
+    try {
+      const docRef = doc(db, "users", user.uid);
+      const snap = await getDoc(docRef);
 
-    if (!snap.exists()) {
-      navigate("/");
-      return;
-    }
+      if (!snap.exists()) {
+        navigate("/");
+        return;
+      }
 
-    const role = snap.data().role;
+      const role = snap.data().role || "user";
 
-    if (role === "admin") {
-      navigate("/admin");
-    } else if (role === "sysadmin") {
-      navigate("/sysadmin");
-    } else {
+      switch (role) {
+        case "admin":
+          navigate("/admin");
+          break;
+
+        case "sysadmin":
+          navigate("/sysadmin");
+          break;
+
+        case "user":
+        default:
+          navigate("/patient-dashboard");
+          break;
+      }
+    } catch (err) {
+      console.error(err);
       navigate("/");
     }
   };
 
+  // Email Login
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -48,11 +65,12 @@ export default function Login() {
       await redirectUser(result.user);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
+  // Google Login
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError("");
@@ -63,9 +81,9 @@ export default function Login() {
       await redirectUser(result.user);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -83,8 +101,8 @@ export default function Login() {
             placeholder="Email"
             required
             value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-slate-200"
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
 
           <input
@@ -92,8 +110,8 @@ export default function Login() {
             placeholder="Password"
             required
             value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-slate-200"
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
 
           {error && (
@@ -103,8 +121,9 @@ export default function Login() {
           )}
 
           <button
+            type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white rounded-xl"
+            className="w-full py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-xl hover:shadow-lg transition disabled:opacity-60"
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
@@ -112,15 +131,15 @@ export default function Login() {
         </form>
 
         <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-slate-200"/>
+          <div className="flex-1 h-px bg-slate-200" />
           <span className="text-slate-400 text-sm">or</span>
-          <div className="flex-1 h-px bg-slate-200"/>
+          <div className="flex-1 h-px bg-slate-200" />
         </div>
 
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full py-3 border rounded-xl"
+          className="w-full py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition disabled:opacity-60"
         >
           Continue with Google
         </button>
@@ -129,7 +148,7 @@ export default function Login() {
           Don't have an account?{" "}
           <Link
             to="/signup"
-            className="text-teal-700 font-semibold"
+            className="text-teal-700 font-semibold hover:underline"
           >
             Sign Up
           </Link>

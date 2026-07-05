@@ -28,7 +28,7 @@ import TermsOfService from "./pages/TermsOfService";
 import AdminPanel from "./pages/AdminPanel";
 import RequireRole from "./components/Shared/RequireRole";
 import SysAdminDashboard from "./pages/SysAdminDashboard";
-
+import PatientDashboard from "./pages/PatientDashboard";
 // Blog detail pages
 import ErgonomicBlog from "./pages/Blog/ErgonomicBlog";
 import KneeOsteoarthritisBlog from "./pages/Blog/KneeOsteoarthritisBlog";
@@ -99,6 +99,13 @@ function App() {
   element={
     <RequireRole allowed={["sysadmin"]}>
       <SysAdminDashboard />
+    </RequireRole>
+  }
+/><Route
+  path="/patient-dashboard"
+  element={
+    <RequireRole allowed={["user"]}>
+      <PatientDashboard />
     </RequireRole>
   }
 />
