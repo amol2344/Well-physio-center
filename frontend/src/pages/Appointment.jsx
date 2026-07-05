@@ -1,8 +1,10 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet";
 import toast from "react-hot-toast";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
 import {
   FiUser,
   FiActivity,
@@ -46,7 +48,7 @@ InfoCard.defaultProps = {
 };
 
 // Step 1: Personal Information
-const PersonalInfoStep = ({ formData, errors, handleInputChange }) => (
+const PersonalInfoStep = ({ formData, errors, handleInputChange, disableEmail }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8">
     <div className="text-center mb-8">
       <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100">
@@ -109,6 +111,7 @@ const PersonalInfoStep = ({ formData, errors, handleInputChange }) => (
           type="date"
           id="dateOfBirth"
           value={formData.dateOfBirth}
+          max={new Date().toISOString().split("T")[0]}
           onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
           className={`w-full p-4 text-base border rounded-xl focus:outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-500/20 transition-colors ${
             errors.dateOfBirth ? "border-red-500" : "border-gray-300"
@@ -152,8 +155,11 @@ const PersonalInfoStep = ({ formData, errors, handleInputChange }) => (
           type="email"
           id="email"
           value={formData.email}
+          disabled={disableEmail}
           onChange={(e) => handleInputChange("email", e.target.value)}
           className={`w-full p-4 text-base border rounded-xl focus:outline-none focus:ring-2 focus:border-blue-500 focus:ring-blue-500/20 transition-colors ${
+            disableEmail ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+          } ${
             errors.email ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Enter your email address"
@@ -202,6 +208,10 @@ PersonalInfoStep.propTypes = {
   }).isRequired,
   errors: PropTypes.object.isRequired,
   handleInputChange: PropTypes.func.isRequired,
+  disableEmail: PropTypes.bool,
+};
+PersonalInfoStep.defaultProps = {
+  disableEmail: false,
 };
 
 // Step 2: Pain & Symptoms
@@ -471,7 +481,7 @@ const Appointment = () => {
   const [medicalQuestions, setMedicalQuestions] = useState({});
   const [quickQuestions, setQuickQuestions] = useState({});
   const [status, setStatus] = useState({ submitting: false, success: false, error: null });
-  
+  const { currentUser } = useAuth();
   // API URL
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   const steps = ["Personal Information", "Pain & Symptoms", "Medical History"];
@@ -482,13 +492,20 @@ const Appointment = () => {
     { name: "Legs", icon: "🚶" }, { name: "Knees", icon: "🦵" }, { name: "Feet", icon: "👣" },
   ];
 
+  // Auto-fill email from the logged-in Firebase account so the appointment
+  // record can never be tied to a different email than the authenticated user.
+  useEffect(() => {
+    if (currentUser?.email) {
+      setFormData((prev) => ({ ...prev, email: currentUser.email }));
+    }
+  }, [currentUser]);
+
   // Helper functions for validation
   const validatePersonalInfo = (errors) => {
     const requiredFields = [
       { field: 'firstName', message: 'First name is required' },
       { field: 'lastName', message: 'Last name is required' },
       { field: 'dateOfBirth', message: 'Date of birth is required' },
-      { field: 'phone', message: 'Phone number is required' },
       { field: 'address', message: 'Address is required' }
     ];
 
@@ -497,6 +514,12 @@ const Appointment = () => {
         errors[field] = message;
       }
     });
+
+    if (!formData.phone.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) {
+      errors.phone = "Enter a valid 10-digit phone number";
+    }
 
     if (!formData.email.trim()) {
       errors.email = "Email is required";
@@ -587,6 +610,15 @@ const Appointment = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Guard against duplicate submissions (double click / double tap)
+    if (status.submitting) return;
+
+    if (!currentUser) {
+      toast.error("Please login first.");
+      return;
+    }
+
     if (!validateStep(currentStep) || !isFormComplete()) { 
       toast.error("Please complete all required fields before submitting."); 
       return; 
@@ -598,9 +630,10 @@ const Appointment = () => {
     const requestData = {
       type: 'appointment',
       data: {
+        patient_id: currentUser.uid,
         first_name: formData.firstName,
         last_name: formData.lastName,
-        user_email: formData.email,
+        user_email: currentUser.email,
         user_phone: formData.phone,
         date_of_birth: formData.dateOfBirth,
         address: formData.address,
@@ -621,37 +654,82 @@ const Appointment = () => {
     };
 
     try {
-      // Send request to backend
-      const response = await fetch(`${API_URL}/api/send-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
+     const docRef = await addDoc(collection(db, "appointments"), {
+        patientId: currentUser.uid,
+
+        patientName: `${formData.firstName} ${formData.lastName}`,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+
+        patientEmail: currentUser.email,
+
+        phone: formData.phone,
+
+        address: formData.address,
+
+        dob: formData.dateOfBirth,
+
+        painAreas: selectedPoints,
+
+        painLevel,
+
+        quickQuestions,
+
+        medicalQuestions,
+
+        additionalInfo: formData.additionalInfo,
+
+        status: "Pending",
+
+        assignedDoctorId: null,
+        assignedDoctorName: null,
+
+        appointmentDate: null,
+        appointmentTime: null,
+
+        paymentStatus: "Unpaid",
+
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        setStatus({ submitting: false, success: true, error: null });
-        setFormData({ 
-          firstName: "", 
-          lastName: "", 
-          dateOfBirth: "", 
-          phone: "", 
-          email: "", 
-          address: "", 
-          additionalInfo: "" 
+      // Send the notification email as a secondary, non-blocking step.
+      // The appointment is already saved in Firestore at this point, so a
+      // failure here should not be surfaced as a full submission failure.
+      try {
+        const response = await fetch(`${API_URL}/api/send-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
         });
-        setSelectedPoints([]); 
-        setPainLevel(5);
-        setMedicalQuestions({}); 
-        setQuickQuestions({});
-        setCurrentStep(0); 
-        toast.success("Your appointment request has been submitted successfully! We'll contact you within 24 hours to confirm.");
-      } else {
-        throw new Error(result.message);
+
+        const result = await response.json();
+        if (!result.success) {
+          console.error("Email notification failed:", result.message);
+        }
+      } catch (emailErr) {
+        console.error("Email notification error:", emailErr);
       }
+
+      setStatus({ submitting: false, success: true, error: null });
+      setFormData({
+        firstName: "",
+        lastName: "",
+        dateOfBirth: "",
+        phone: "",
+        email: currentUser?.email || "",
+        address: "",
+        additionalInfo: ""
+      });
+      setSelectedPoints([]); 
+      setPainLevel(5);
+      setMedicalQuestions({}); 
+      setQuickQuestions({});
+      setErrors({});
+      setCurrentStep(0); 
+      toast.success("Your appointment request has been submitted successfully! We'll contact you within 24 hours to confirm.");
     } catch (err) {
       console.error(err);
       setStatus({ submitting: false, success: false, error: "Network error. Please try again later." });
@@ -667,6 +745,7 @@ const Appointment = () => {
             formData={formData}
             errors={errors}
             handleInputChange={handleInputChange}
+            disableEmail={!!currentUser}
           />
         );
       case 1:
@@ -832,7 +911,7 @@ Clinic Timings
               </div>
 
               {/* Form Content */}
-              <div className="flex-1 p-8">
+              <form onSubmit={handleSubmit} className="flex-1 p-8">
                 <AnimatePresence mode="wait">
                   {renderStepContent(currentStep)}
                 </AnimatePresence>
@@ -869,7 +948,6 @@ Clinic Timings
                   ) : (
                     <motion.button
                       type="submit"
-                      onClick={handleSubmit}
                       disabled={!isFormComplete() || status.submitting}
                       whileHover={{
                         scale:
@@ -899,7 +977,7 @@ Clinic Timings
                     </motion.button>
                   )}
                 </div>
-              </div>
+              </form>
             </div>
           </motion.div>
         </div>
