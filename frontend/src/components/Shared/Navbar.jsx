@@ -120,14 +120,25 @@ const Navbar = () => {
             {/* Auth section */}
             {currentUser ? (
               <div className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200">
-                {role === "admin" && (
-                  <Link
-                    to="/admin"
-                    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300"
-                  >
-                    Admin Panel
-                  </Link>
-                )}
+               {/* Admin Button */}
+{role === "admin" && (
+  <Link
+    to="/admin"
+    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300"
+  >
+    Admin Panel
+  </Link>
+)}
+
+{/* SysAdmin Button */}
+{role === "sysadmin" && (
+  <Link
+    to="/sysadmin"
+    className="px-4 py-2 rounded-xl bg-teal-100 text-teal-700 font-medium hover:bg-teal-200 transition-all duration-300"
+  >
+    SysAdmin Panel
+  </Link>
+)}
                 <span className="flex items-center gap-2 text-sm text-slate-600">
                   <FiUser className="text-teal-600" />
                   {currentUser.email}
@@ -212,21 +223,47 @@ const Navbar = () => {
               ))}
 
               {/* Auth section - mobile */}
-              {currentUser ? (
-                <div className="mt-2 px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-sm text-slate-600">
-                    <FiUser className="text-teal-600" />
-                    {currentUser.email}
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1 text-red-600 font-medium"
-                  >
-                    <FiLogOut size={16} />
-                    Log Out
-                  </button>
-                </div>
-              ) : (
+             {/* Auth section - mobile */}
+{currentUser ? (
+  <div className="mt-2 space-y-3">
+
+    {role === "admin" && (
+      <Link
+        to="/admin"
+        onClick={closeMobileMenu}
+        className="block w-full px-6 py-3 rounded-2xl bg-orange-100 text-orange-700 font-semibold text-center"
+      >
+        Admin Panel
+      </Link>
+    )}
+
+    {role === "sysadmin" && (
+      <Link
+        to="/sysadmin-dashboard"
+        onClick={closeMobileMenu}
+        className="block w-full px-6 py-3 rounded-2xl bg-teal-100 text-teal-700 font-semibold text-center"
+      >
+        SysAdmin Dashboard
+      </Link>
+    )}
+
+    <div className="px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between">
+      <span className="flex items-center gap-2 text-sm text-slate-600">
+        <FiUser className="text-teal-600" />
+        {currentUser.email}
+      </span>
+
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-1 text-red-600 font-medium"
+      >
+        <FiLogOut size={16} />
+        Log Out
+      </button>
+    </div>
+
+  </div>
+) : (
                 <div className="mt-2 flex gap-3">
                   <Link
                     to="/login"
