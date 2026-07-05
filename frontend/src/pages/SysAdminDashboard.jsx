@@ -27,11 +27,11 @@ const TABS = [
 ];
 
 function StatusBadge({ status }) {
-  const styles = {
-    pending: "bg-yellow-100 text-yellow-700",
-    accepted: "bg-green-100 text-green-700",
-    declined: "bg-red-100 text-red-700",
-  };
+const styles = {
+    Pending: "bg-yellow-100 text-yellow-700",
+    Accepted: "bg-green-100 text-green-700",
+    Declined: "bg-red-100 text-red-700",
+};
   return (
     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.pending}`}>
       {status}
@@ -84,12 +84,14 @@ export default function SysAdminDashboard() {
   const handleAppointmentDecision = async (appointmentId, decision) => {
     setUpdatingId(appointmentId);
     try {
-      await updateDoc(doc(db, "appointments", appointmentId), {
-        status: decision, // "accepted" | "declined"
-        doctorUid: currentUser.uid,
-        doctorName: name || currentUser.email,
-        decidedAt: new Date().toISOString(),
-      });
+     await updateDoc(doc(db, "appointments", appointmentId), {
+  status: decision,
+
+  assignedDoctorId: currentUser.uid,
+  assignedDoctorName: name || currentUser.email,
+
+  updatedAt: new Date(),
+});
     } catch (err) {
       console.error("Failed to update appointment:", err);
       alert("Failed to update appointment. Please try again.");
@@ -165,7 +167,7 @@ export default function SysAdminDashboard() {
                       </h3>
                       <p className="text-sm text-slate-500 flex items-center gap-2 mt-1">
                         <FiMail size={14} /> {appt.patientEmail}
-                        <FiPhone size={14} className="ml-3" /> {appt.patientPhone}
+                        <FiPhone size={14} className="ml-3" /> {appt.phone}
                       </p>
                     </div>
                     <StatusBadge status={appt.status} />
@@ -175,7 +177,7 @@ export default function SysAdminDashboard() {
                     <p><span className="font-medium">Pain areas:</span> {(appt.painAreas || []).join(", ") || "—"}</p>
                     <p><span className="font-medium">Pain level:</span> {appt.painLevel}/10</p>
                     <p><span className="font-medium">Address:</span> {appt.address}</p>
-                    <p><span className="font-medium">DOB:</span> {appt.dateOfBirth}</p>
+                    <p><span className="font-medium">DOB:</span> {appt.dob}</p>
                   </div>
 
                   {appt.additionalInfo && (
@@ -189,29 +191,40 @@ export default function SysAdminDashboard() {
                       <FiClock size={12} /> {formatDate(appt.createdAt)}
                     </span>
 
-                    {appt.status === "pending" ? (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleAppointmentDecision(appt.id, "declined")}
-                          disabled={updatingId === appt.id}
-                          className="flex items-center gap-1 px-4 py-2 rounded-xl bg-red-50 text-red-600 font-medium hover:bg-red-100 transition-all disabled:opacity-50"
-                        >
-                          <FiX size={16} /> Decline
-                        </button>
-                        <button
-                          onClick={() => handleAppointmentDecision(appt.id, "accepted")}
-                          disabled={updatingId === appt.id}
-                          className="flex items-center gap-1 px-4 py-2 rounded-xl bg-green-600 text-white font-medium hover:bg-green-700 transition-all disabled:opacity-50"
-                        >
-                          <FiCheck size={16} /> Accept
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-slate-500">
-                        {appt.status === "accepted" ? "Accepted by " : "Declined by "}
-                        {appt.doctorName || "—"}
-                      </span>
-                    )}
+                    {appt.status === "Pending" ? (
+  <div className="flex gap-2">
+    <button
+      onClick={() =>
+        handleAppointmentDecision(appt.id, "Declined")
+      }
+      disabled={updatingId === appt.id}
+      className="px-4 py-2 rounded-xl bg-red-100"
+    >
+      Decline
+    </button>
+
+    <button
+      onClick={() =>
+        handleAppointmentDecision(appt.id, "Accepted")
+      }
+      disabled={updatingId === appt.id}
+      className="px-4 py-2 rounded-xl bg-green-600 text-white"
+    >
+      Accept
+    </button>
+  </div>
+) : (
+  <div className="text-sm">
+    <p>
+      <b>Status:</b> {appt.status}
+    </p>
+
+    <p>
+      <b>Assigned Physiotherapist:</b>{" "}
+      {appt.assignedDoctorName}
+    </p>
+  </div>
+)}
                   </div>
                 </div>
               ))}
