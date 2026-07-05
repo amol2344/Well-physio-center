@@ -95,7 +95,7 @@ function App() {
     </RequireRole>
   }
 /><Route
-  path="/sysadmin-dashboard"
+  path="/sysadmin"
   element={
     <RequireRole allowed={["sysadmin"]}>
       <SysAdminDashboard />

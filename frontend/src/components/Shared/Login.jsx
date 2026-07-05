@@ -1,98 +1,140 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, googleProvider, db } from "../../firebase/firebase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
+  const redirectUser = async (user) => {
+    const docRef = doc(db, "users", user.uid);
+    const snap = await getDoc(docRef);
+
+    if (!snap.exists()) {
       navigate("/");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      return;
+    }
+
+    const role = snap.data().role;
+
+    if (role === "admin") {
+      navigate("/admin");
+    } else if (role === "sysadmin") {
+      navigate("/sysadmin");
+    } else {
+      navigate("/");
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setError("");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     setLoading(true);
+    setError("");
+
     try {
-      await signInWithPopup(auth, googleProvider);
-      navigate("/");
+      const result = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      await redirectUser(result.user);
     } catch (err) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+
+      await redirectUser(result.user);
+    } catch (err) {
+      setError(err.message);
+    }
+
+    setLoading(false);
   };
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm bg-white p-8 rounded-3xl shadow-2xl border-2 border-slate-100">
+
         <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent mb-6">
           Welcome Back
         </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
+
           <input
             type="email"
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200"
           />
+
           <input
             type="password"
             placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
+            value={password}
+            onChange={(e)=>setPassword(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200"
           />
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm text-center">
+              {error}
+            </p>
+          )}
 
           <button
-            type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-60"
+            className="w-full py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white rounded-xl"
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
+
         </form>
 
         <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-slate-200" />
+          <div className="flex-1 h-px bg-slate-200"/>
           <span className="text-slate-400 text-sm">or</span>
-          <div className="flex-1 h-px bg-slate-200" />
+          <div className="flex-1 h-px bg-slate-200"/>
         </div>
 
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full py-3 border-2 border-slate-200 rounded-xl font-medium text-slate-700 hover:bg-slate-50 transition-all duration-300 disabled:opacity-60"
+          className="w-full py-3 border rounded-xl"
         >
           Continue with Google
         </button>
 
-        <p className="text-center text-sm text-slate-500 mt-6">
+        <p className="text-center text-sm mt-6">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-teal-700 font-semibold hover:underline">
+          <Link
+            to="/signup"
+            className="text-teal-700 font-semibold"
+          >
             Sign Up
           </Link>
         </p>
+
       </div>
     </div>
   );

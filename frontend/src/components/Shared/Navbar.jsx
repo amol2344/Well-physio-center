@@ -11,7 +11,6 @@ const Navbar = () => {
   const location = useLocation();
   const navbarRef = useRef(null);
   const { currentUser, role } = useAuth();
-  console.log("Navbar debug:", { currentUser: currentUser?.email, role });
 
   useEffect(() => {
     const handleScroll = () => {
