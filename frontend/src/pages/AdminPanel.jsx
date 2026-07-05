@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-const ROLES = ["user", "admin", "Physiotherapist"];
+const ROLES = ["user", "admin", "sysadmin"];
 
 export default function AdminPanel() {
   const { currentUser } = useAuth();
@@ -95,7 +95,7 @@ export default function AdminPanel() {
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         u.role === "admin"
                           ? "bg-orange-100 text-orange-700"
-                          : u.role === "Physiotherapist"
+                          : u.role === "sysadmin"
                           ? "bg-teal-100 text-teal-700"
                           : "bg-slate-100 text-slate-600"
                       }`}
