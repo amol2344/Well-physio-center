@@ -33,9 +33,13 @@ const styles = {
     Declined: "bg-red-100 text-red-700",
 };
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.pending}`}>
-      {status}
-    </span>
+   <span
+  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+    styles[status] || styles.Pending
+  }`}
+>
+  {status}
+</span>
   );
 }
 
@@ -136,7 +140,7 @@ export default function SysAdminDashboard() {
               {tab.label}
               {tab.id === "appointments" && (
                 <span className="ml-1 bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">
-                  {appointments.filter((a) => a.status === "pending").length}
+                  {appointments.filter((a) => a.status === "Pending").length}
                 </span>
               )}
             </button>
