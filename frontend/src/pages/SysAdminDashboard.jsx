@@ -19,7 +19,7 @@ import {
   FiUser,
   FiPhone,
 } from "react-icons/fi";
-
+import { getDoc } from "firebase/firestore";
 const TABS = [
   { id: "appointments", label: "Appointments", icon: FiCalendar },
   { id: "contacts", label: "Contact Messages", icon: FiMail },
@@ -86,6 +86,15 @@ export default function SysAdminDashboard() {
   }, []);
 
   const handleAppointmentDecision = async (appointmentId, decision) => {
+
+     const ref = doc(db, "appointments", appointmentId);
+
+  const snap = await getDoc(ref);
+
+  if (snap.data().status === "Accepted") {
+    alert("This appointment has already been accepted by another physiotherapist.");
+    return;
+  }
     setUpdatingId(appointmentId);
     try {
      await updateDoc(doc(db, "appointments", appointmentId), {
@@ -196,27 +205,13 @@ export default function SysAdminDashboard() {
                     </span>
 
                     {appt.status === "Pending" ? (
-  <div className="flex gap-2">
-    <button
-      onClick={() =>
-        handleAppointmentDecision(appt.id, "Declined")
-      }
-      disabled={updatingId === appt.id}
-      className="px-4 py-2 rounded-xl bg-red-100"
-    >
-      Decline
-    </button>
-
-    <button
-      onClick={() =>
-        handleAppointmentDecision(appt.id, "Accepted")
-      }
-      disabled={updatingId === appt.id}
-      className="px-4 py-2 rounded-xl bg-green-600 text-white"
-    >
-      Accept
-    </button>
-  </div>
+ <button
+  onClick={() => handleAppointmentDecision(appt.id, "Accepted")}
+  disabled={updatingId === appt.id}
+  className="px-5 py-2 rounded-xl bg-green-600 text-white"
+>
+  Accept Appointment
+</button>
 ) : (
   <div className="text-sm">
     <p>
