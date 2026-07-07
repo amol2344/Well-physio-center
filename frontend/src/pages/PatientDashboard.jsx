@@ -19,18 +19,12 @@ import {
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 
-import {
-  FaCalendarCheck,
-  FaClipboardList,
-  FaFileMedical,
-  FaBell,
-  FaUserCircle,
-  FaRunning,
-} from "react-icons/fa";
+
 export default function PatientDashboard() {
   const { name, currentUser } = useAuth();
 const [appointment, setAppointment] = useState(null);
 const [loading, setLoading] = useState(true);
+
 useEffect(() => {
   if (!currentUser) return;
 
@@ -42,7 +36,10 @@ useEffect(() => {
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     if (!snapshot.empty) {
-      setAppointment(snapshot.docs[0].data());
+     setAppointment({
+    id: snapshot.docs[0].id,
+    ...snapshot.docs[0].data(),
+});
     } else {
       setAppointment(null);
     }
@@ -52,6 +49,7 @@ useEffect(() => {
 
   return unsubscribe;
 }, [currentUser]);
+
   return (
     <div className="min-h-screen bg-slate-100">
 
@@ -126,53 +124,75 @@ useEffect(() => {
           <div className="lg:col-span-2 space-y-6">
 
             {/* Appointment */}
+{/* Appointment */}
 
-          {loading ? (
-  <p>Loading...</p>
-) : appointment ? (
-  <div className="grid md:grid-cols-2 gap-4">
+<div className="bg-white rounded-2xl shadow p-6">
 
-    <div>
-      <p className="text-slate-500">Physiotherapist</p>
-      <p className="font-semibold">
-        {appointment.assignedDoctorName || "Waiting for Assignment"}
-      </p>
-    </div>
+  <h2 className="text-2xl font-bold mb-4">
+    Upcoming Appointment
+  </h2>
 
-    <div>
-      <p className="text-slate-500">Status</p>
+  {loading ? (
+    <p>Loading...</p>
+  ) : appointment ? (
 
-      <span
-        className={`px-3 py-1 rounded-full text-sm ${
-          appointment.status === "Accepted"
-            ? "bg-green-100 text-green-700"
-            : "bg-yellow-100 text-yellow-700"
-        }`}
-      >
-        {appointment.status}
-      </span>
-    </div>
+    <div className="grid md:grid-cols-2 gap-4">
 
-    <div>
-      <p className="text-slate-500">Appointment Date</p>
-      <p className="font-semibold">
-        {appointment.appointmentDate || "Pending"}
-      </p>
-    </div>
+      <div className="flex items-center gap-4">
 
-    <div>
-      <p className="text-slate-500">Appointment Time</p>
-      <p className="font-semibold">
-        {appointment.appointmentTime || "Pending"}
-      </p>
-    </div>
+  <div className="text-sm">
+
+    <p>
+      <b>Status:</b> {  appointment.status}
+    </p>
+
+    <p>
+      <b>Assigned Physiotherapist:</b>{" "}
+      {  appointment.assignedDoctorName}
+    </p>
 
   </div>
-) : (
-  <p className="text-slate-500">
-    You haven't booked any appointments yet.
-  </p>
-)}
+
+  
+</div>
+
+      <div>
+        <p className="text-slate-500">Status</p>
+
+        <span
+          className={`px-3 py-1 rounded-full text-sm ${
+            appointment.status === "Accepted"
+              ? "bg-green-100 text-green-700"
+              : "bg-yellow-100 text-yellow-700"
+          }`}
+        >
+          {appointment.status}
+        </span>
+      </div>
+
+      <div>
+        <p className="text-slate-500">Appointment Date</p>
+        <p className="font-semibold">
+          {appointment.appointmentDate || "Pending"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-slate-500">Appointment Time</p>
+        <p className="font-semibold">
+          {appointment.appointmentTime || "Pending"}
+        </p>
+      </div>
+
+    </div>
+
+  ) : (
+    <p className="text-slate-500">
+      You haven't booked any appointments yet.
+    </p>
+  )}
+
+</div>
 
             {/* Exercise */}
 
