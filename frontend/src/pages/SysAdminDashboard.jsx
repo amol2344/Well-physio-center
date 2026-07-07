@@ -5,7 +5,7 @@ import {
   orderBy,
   onSnapshot,
   doc,
-  updateDoc,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
@@ -85,33 +85,48 @@ export default function SysAdminDashboard() {
     };
   }, []);
 
-  const handleAppointmentDecision = async (appointmentId, decision) => {
+  const handleAppointmentDecision = async (appointmentId) => {
 
-     const ref = doc(db, "appointments", appointmentId);
+  setUpdatingId(appointmentId);
 
-  const snap = await getDoc(ref);
+  const appointmentRef = doc(db, "appointments", appointmentId);
 
-  if (snap.data().status === "Accepted") {
-    alert("This appointment has already been accepted by another physiotherapist.");
-    return;
+  try {
+
+    await runTransaction(db, async (transaction) => {
+
+      const appointmentDoc = await transaction.get(appointmentRef);
+
+      if (!appointmentDoc.exists()) {
+        throw new Error("Appointment not found.");
+      }
+
+      const data = appointmentDoc.data();
+
+      if (data.status === "Accepted") {
+        throw new Error("Already accepted by another physiotherapist.");
+      }
+
+      transaction.update(appointmentRef, {
+        status: "Accepted",
+        assignedDoctorId: currentUser.uid,
+        assignedDoctorName: name || currentUser.email,
+        updatedAt: new Date(),
+      });
+
+    });
+
+  } catch (error) {
+
+    alert(error.message);
+
+  } finally {
+
+    setUpdatingId(null);
+
   }
-    setUpdatingId(appointmentId);
-    try {
-     await updateDoc(doc(db, "appointments", appointmentId), {
-  status: decision,
 
-  assignedDoctorId: currentUser.uid,
-  assignedDoctorName: name || currentUser.email,
-
-  updatedAt: new Date(),
-});
-    } catch (err) {
-      console.error("Failed to update appointment:", err);
-      alert("Failed to update appointment. Please try again.");
-    } finally {
-      setUpdatingId(null);
-    }
-  };
+};
 
   const formatDate = (ts) => {
     if (!ts) return "—";
@@ -206,7 +221,7 @@ export default function SysAdminDashboard() {
 
                     {appt.status === "Pending" ? (
  <button
-  onClick={() => handleAppointmentDecision(appt.id, "Accepted")}
+ onClick={() => handleAppointmentDecision(appt.id)}
   disabled={updatingId === appt.id}
   className="px-5 py-2 rounded-xl bg-green-600 text-white"
 >
