@@ -6,6 +6,7 @@ import {
   onSnapshot,
   doc,
   runTransaction,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
@@ -52,7 +53,9 @@ export default function SysAdminDashboard() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
-
+const [selectedAppointment, setSelectedAppointment] = useState(null);
+const [appointmentDate, setAppointmentDate] = useState("");
+const [appointmentTime, setAppointmentTime] = useState("");
   useEffect(() => {
     setLoading(true);
 
@@ -127,7 +130,29 @@ export default function SysAdminDashboard() {
   }
 
 };
+const openScheduleModal = (appt) => {
+  setSelectedAppointment(appt);
+  setAppointmentDate(appt.appointmentDate || "");
+  setAppointmentTime(appt.appointmentTime || "");
+};
 
+const saveSchedule = async () => {
+  try {
+    await updateDoc(
+      doc(db, "appointments", selectedAppointment.id),
+      {
+        appointmentDate,
+        appointmentTime,
+        updatedAt: new Date(),
+      }
+    );
+
+    setSelectedAppointment(null);
+  } catch (err) {
+    console.error(err);
+    alert("Unable to save schedule.");
+  }
+};
   const formatDate = (ts) => {
     if (!ts) return "—";
     const date = ts.toDate ? ts.toDate() : new Date(ts);
@@ -228,16 +253,35 @@ export default function SysAdminDashboard() {
   Accept Appointment
 </button>
 ) : (
+ <div className="flex items-center gap-4">
+
   <div className="text-sm">
-    <p>
-      <b>Status:</b> {appt.status}
-    </p>
+    <p><b>Status:</b> {appt.status}</p>
 
     <p>
       <b>Assigned Physiotherapist:</b>{" "}
       {appt.assignedDoctorName}
     </p>
+
+    <p>
+      <b>Date:</b> {appt.appointmentDate || "Not Scheduled"}
+    </p>
+
+    <p>
+      <b>Time:</b> {appt.appointmentTime || "Not Scheduled"}
+    </p>
   </div>
+
+  {appt.assignedDoctorId === currentUser.uid && (
+    <button
+      onClick={() => openScheduleModal(appt)}
+      className="bg-blue-600 text-white px-4 py-2 rounded-xl"
+    >
+      Schedule Appointment
+    </button>
+  )}
+
+</div>
 )}
                   </div>
                 </div>
@@ -293,6 +337,53 @@ export default function SysAdminDashboard() {
           )}
         </>
       )}
+      {selectedAppointment && (
+  <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+    <div className="bg-white rounded-xl p-6 w-[420px]">
+
+      <h2 className="text-xl font-bold mb-4">
+        Schedule Appointment
+      </h2>
+
+      <label>Date</label>
+
+      <input
+        type="date"
+        value={appointmentDate}
+        onChange={(e) => setAppointmentDate(e.target.value)}
+        className="w-full border rounded-lg p-2 mb-4"
+      />
+
+      <label>Time</label>
+
+      <input
+        type="time"
+        value={appointmentTime}
+        onChange={(e) => setAppointmentTime(e.target.value)}
+        className="w-full border rounded-lg p-2"
+      />
+
+      <div className="flex justify-end gap-3 mt-5">
+
+        <button
+          onClick={() => setSelectedAppointment(null)}
+          className="border px-4 py-2 rounded-lg"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={saveSchedule}
+          className="bg-green-600 text-white px-5 py-2 rounded-lg"
+        >
+          Save
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   );
 }
