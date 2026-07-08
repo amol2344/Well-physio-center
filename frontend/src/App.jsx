@@ -29,6 +29,7 @@ import AdminPanel from "./pages/AdminPanel";
 import RequireRole from "./components/Shared/RequireRole";
 import SysAdminDashboard from "./pages/SysAdminDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
+import PatientProfile from "./pages/PatientProfile";
 // Blog detail pages
 import ErgonomicBlog from "./pages/Blog/ErgonomicBlog";
 import KneeOsteoarthritisBlog from "./pages/Blog/KneeOsteoarthritisBlog";
@@ -108,6 +109,10 @@ function App() {
       <PatientDashboard />
     </RequireRole>
   }
+/>
+<Route
+    path="/patient/profile"
+    element={<PatientProfile />}
 />
               {/* 404 */}
               <Route path="*" element={withLoader(NotFound)} />

@@ -17,13 +17,13 @@ import { useEffect, useState } from "react";import {
 
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
-
+import { useNavigate } from "react-router-dom";
 export default function PatientDashboard() {
   const { name, currentUser } = useAuth();
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-
+const navigate = useNavigate();
   useEffect(() => {
     if (!currentUser) return;
 
@@ -181,45 +181,7 @@ export default function PatientDashboard() {
 
             {/* Exercise */}
 
-            <div className="bg-white rounded-2xl shadow p-6">
-
-              <h2 className="text-2xl font-bold mb-4">
-                Today's Exercise
-              </h2>
-
-              <div className="space-y-4">
-
-                <div className="flex items-center gap-4">
-                  <FaRunning className="text-teal-600 text-2xl" />
-
-                  <div>
-                    <p className="font-semibold">
-                      Back Stretching
-                    </p>
-
-                    <p className="text-slate-500">
-                      15 Minutes
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <FaRunning className="text-orange-500 text-2xl" />
-
-                  <div>
-                    <p className="font-semibold">
-                      Shoulder Mobility
-                    </p>
-
-                    <p className="text-slate-500">
-                      20 Minutes
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
+           
 
           </div>
 
@@ -240,9 +202,12 @@ export default function PatientDashboard() {
                 {currentUser?.email}
               </p>
 
-              <button className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white hover:opacity-90">
-                View Profile
-              </button>
+              <button
+onClick={() => navigate("/patient/profile")}
+className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white"
+>
+View Profile
+</button>
 
             </div>
 
