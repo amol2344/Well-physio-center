@@ -39,7 +39,8 @@ const loadProfile = async () => {
     const ref = doc(db, "users", currentUser.uid);
 
     const snap = await getDoc(ref);
-
+console.log(currentUser.uid);
+console.log(currentUser.email);
     if (snap.exists()) {
 
       const data = snap.data();
