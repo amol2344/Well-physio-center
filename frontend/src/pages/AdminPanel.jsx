@@ -112,47 +112,53 @@ export default function AdminPanel() {
   // Live Contact Messages
   // =============================
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(
-        collection(db, "contactRequests"),
-        orderBy("createdAt", "desc")
-      ),
-      (snapshot) => {
-        setContacts(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-        );
-      }
-    );
+useEffect(() => {
+  const unsubscribe = onSnapshot(
+    query(
+      collection(db, "contactSubmissions"),
+      orderBy("createdAt", "desc")
+    ),
+    (snapshot) => {
+      setContacts(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+    },
+    (error) => {
+      console.error("CONTACT ERROR:", error);
+    }
+  );
 
-    return unsubscribe;
-  }, []);
+  return unsubscribe;
+}, []);
 
   // =============================
   // Live Subscription Requests
   // =============================
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(
-        collection(db, "planInquiries"),
-        orderBy("createdAt", "desc")
-      ),
-      (snapshot) => {
-        setPlans(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-        );
-      }
-    );
+useEffect(() => {
+  const unsubscribe = onSnapshot(
+    query(
+      collection(db, "planInquiries"),
+      orderBy("createdAt", "desc")
+    ),
+    (snapshot) => {
+      setPlans(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+    },
+    (error) => {
+      console.error("PLAN ERROR:", error);
+    }
+  );
 
-    return unsubscribe;
-  }, []);
+  return unsubscribe;
+}, []);
     // =============================
   // Change User Role
   // =============================
