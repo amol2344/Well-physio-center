@@ -106,7 +106,10 @@ const [appointmentTime, setAppointmentTime] = useState("");
 
       const data = appointmentDoc.data();
 
-      if (data.status === "Accepted") {
+      if (
+    data.status === "Accepted" ||
+    data.status === "Cancelled"
+) {
         throw new Error("Already accepted by another physiotherapist.");
       }
 

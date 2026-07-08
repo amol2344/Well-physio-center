@@ -1,54 +1,71 @@
 import {
   FaCalendarCheck,
-  FaClipboardList,
-  FaFileMedical,
   FaBell,
   FaUserCircle,
   FaRunning,
-  FaHome,
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import {
+
+import { useEffect, useState } from "react";import {
   collection,
   query,
   where,
   orderBy,
-  limit,
   onSnapshot,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
+
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 
-
 export default function PatientDashboard() {
   const { name, currentUser } = useAuth();
-const [appointment, setAppointment] = useState(null);
-const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  if (!currentUser) return;
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const q = query(
-    collection(db, "appointments"),
-    where("patientId", "==", currentUser.uid),
-    orderBy("createdAt", "desc")
-  );
+  useEffect(() => {
+    if (!currentUser) return;
 
-  const unsubscribe = onSnapshot(q, (snapshot) => {
-    if (!snapshot.empty) {
-     setAppointment({
-    id: snapshot.docs[0].id,
-    ...snapshot.docs[0].data(),
-});
-    } else {
-      setAppointment(null);
+    const q = query(
+      collection(db, "appointments"),
+      where("patientId", "==", currentUser.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setAppointments(data);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [currentUser]);
+
+  const cancelAppointment = async (id) => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this appointment?"
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      await updateDoc(doc(db, "appointments", id), {
+        status: "Cancelled",
+        cancelledBy: "Patient",
+        cancelledAt: new Date(),
+      });
+
+      alert("Appointment cancelled successfully.");
+    } catch (err) {
+      console.error(err);
+      alert("Unable to cancel appointment.");
     }
-
-    setLoading(false);
-  });
-
-  return unsubscribe;
-}, [currentUser]);
+  };
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -56,7 +73,6 @@ useEffect(() => {
       {/* Header */}
 
       <div className="bg-gradient-to-r from-teal-600 to-orange-500 text-white p-8 shadow-lg">
-
         <h1 className="text-4xl font-bold">
           Welcome {name || "Patient"} 👋
         </h1>
@@ -64,135 +80,104 @@ useEffect(() => {
         <p className="mt-2 text-lg opacity-90">
           Manage your appointments and physiotherapy journey.
         </p>
-
       </div>
 
       <div className="max-w-7xl mx-auto p-6">
 
-        {/* Stats */}
+        <div className="grid lg:grid-cols-3 gap-6">
 
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6">
-
-          <div className="bg-white rounded-2xl shadow p-6">
-
-            <FaCalendarCheck className="text-4xl text-teal-600 mb-3" />
-
-            <h2 className="text-xl font-bold">Upcoming</h2>
-
-            <p className="text-slate-500 mt-2">1 Appointment</p>
-
-          </div>
-
-          <div className="bg-white rounded-2xl shadow p-6">
-
-            <FaClipboardList className="text-4xl text-orange-500 mb-3" />
-
-            <h2 className="text-xl font-bold">Exercises</h2>
-
-            <p className="text-slate-500 mt-2">3 Assigned</p>
-
-          </div>
-
-          <div className="bg-white rounded-2xl shadow p-6">
-
-            <FaFileMedical className="text-4xl text-blue-600 mb-3" />
-
-            <h2 className="text-xl font-bold">Reports</h2>
-
-            <p className="text-slate-500 mt-2">2 Available</p>
-
-          </div>
-
-          <div className="bg-white rounded-2xl shadow p-6">
-
-            <FaBell className="text-4xl text-red-500 mb-3" />
-
-            <h2 className="text-xl font-bold">Notifications</h2>
-
-            <p className="text-slate-500 mt-2">5 New</p>
-
-          </div>
-
-        </div>
-
-        {/* Main Grid */}
-
-        <div className="grid lg:grid-cols-3 gap-6 mt-8">
-
-          {/* Left */}
+          {/* LEFT SIDE */}
 
           <div className="lg:col-span-2 space-y-6">
 
-            {/* Appointment */}
-{/* Appointment */}
+            {/* Appointment History */}
 
-<div className="bg-white rounded-2xl shadow p-6">
+            <div className="bg-white rounded-2xl shadow p-6">
 
-  <h2 className="text-2xl font-bold mb-4">
-    Upcoming Appointment
-  </h2>
+              <div className="flex items-center gap-3 mb-5">
+                <FaCalendarCheck className="text-3xl text-teal-600" />
 
-  {loading ? (
-    <p>Loading...</p>
-  ) : appointment ? (
+                <h2 className="text-2xl font-bold">
+                  Appointment History
+                </h2>
+              </div>
 
-    <div className="grid md:grid-cols-2 gap-4">
+              {loading ? (
+                <p>Loading...</p>
+              ) : appointments.length === 0 ? (
+                <p className="text-slate-500">
+                  No appointments found.
+                </p>
+              ) : (
+                appointments.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="border rounded-xl p-5 mb-5"
+                  >
+                    <div className="flex justify-between items-center">
 
-      <div className="flex items-center gap-4">
+                      <h3 className="font-bold text-lg">
+                        Appointment
+                      </h3>
 
-  <div className="text-sm">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold
+                        ${
+                          appointment.status === "Accepted"
+                            ? "bg-green-100 text-green-700"
+                            : appointment.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : appointment.status === "Cancelled"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {appointment.status}
+                      </span>
+                    </div>
 
-    <p>
-      <b>Status:</b> {  appointment.status}
-    </p>
+                    <div className="grid md:grid-cols-2 gap-4 mt-5">
 
-    <p>
-      <b>Assigned Physiotherapist:</b>{" "}
-      {  appointment.assignedDoctorName}
-    </p>
+                      <p>
+                        <b>Physiotherapist:</b>{" "}
+                        {appointment.assignedDoctorName ||
+                          "Waiting for Assignment"}
+                      </p>
 
-  </div>
+                      <p>
+                        <b>Pain Area:</b>{" "}
+                        {appointment.painAreas?.join(", ")}
+                      </p>
 
-  
-</div>
+                      <p>
+                        <b>Date:</b>{" "}
+                        {appointment.appointmentDate ||
+                          "Not Scheduled"}
+                      </p>
 
-      <div>
-        <p className="text-slate-500">Status</p>
+                      <p>
+                        <b>Time:</b>{" "}
+                        {appointment.appointmentTime ||
+                          "Not Scheduled"}
+                      </p>
 
-        <span
-          className={`px-3 py-1 rounded-full text-sm ${
-            appointment.status === "Accepted"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
-        >
-          {appointment.status}
-        </span>
-      </div>
+                    </div>
 
-      <div>
-        <p className="text-slate-500">Appointment Date</p>
-        <p className="font-semibold">
-          {appointment.appointmentDate || "Pending"}
-        </p>
-      </div>
-
-      <div>
-        <p className="text-slate-500">Appointment Time</p>
-        <p className="font-semibold">
-          {appointment.appointmentTime || "Pending"}
-        </p>
-      </div>
-
-    </div>
-
-  ) : (
-    <p className="text-slate-500">
-      You haven't booked any appointments yet.
-    </p>
-  )}
-
-</div>
+                    {appointment.status !== "Cancelled" &&
+                      appointment.status !== "Completed" && (
+                        <button
+                          onClick={() =>
+                            cancelAppointment(appointment.id)
+                          }
+                          className="mt-5 bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition"
+                        >
+                          Cancel Appointment
+                        </button>
+                      )}
+                  </div>
+                ))
+              )}
+            </div>
 
             {/* Exercise */}
 
@@ -205,11 +190,9 @@ useEffect(() => {
               <div className="space-y-4">
 
                 <div className="flex items-center gap-4">
-
                   <FaRunning className="text-teal-600 text-2xl" />
 
                   <div>
-
                     <p className="font-semibold">
                       Back Stretching
                     </p>
@@ -217,17 +200,13 @@ useEffect(() => {
                     <p className="text-slate-500">
                       15 Minutes
                     </p>
-
                   </div>
-
                 </div>
 
                 <div className="flex items-center gap-4">
-
                   <FaRunning className="text-orange-500 text-2xl" />
 
                   <div>
-
                     <p className="font-semibold">
                       Shoulder Mobility
                     </p>
@@ -235,9 +214,7 @@ useEffect(() => {
                     <p className="text-slate-500">
                       20 Minutes
                     </p>
-
                   </div>
-
                 </div>
 
               </div>
@@ -246,9 +223,8 @@ useEffect(() => {
 
           </div>
 
-          {/* Right */}
-
-          <div className="space-y-6">
+          {/* RIGHT SIDE */}
+                    <div className="space-y-6">
 
             {/* Profile */}
 
@@ -257,21 +233,15 @@ useEffect(() => {
               <FaUserCircle className="mx-auto text-7xl text-teal-600" />
 
               <h2 className="mt-4 text-xl font-bold">
-
-                {name}
-
+                {name || "Patient"}
               </h2>
 
               <p className="text-slate-500">
-
                 {currentUser?.email}
-
               </p>
 
-              <button className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white">
-
+              <button className="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white hover:opacity-90">
                 View Profile
-
               </button>
 
             </div>
@@ -280,31 +250,63 @@ useEffect(() => {
 
             <div className="bg-white rounded-2xl shadow p-6">
 
-              <h2 className="text-xl font-bold mb-4">
+              <div className="flex items-center gap-3 mb-4">
 
-                Recent Notifications
+                <FaBell className="text-2xl text-orange-500" />
 
-              </h2>
+                <h2 className="text-xl font-bold">
+                  Recent Notifications
+                </h2>
+
+              </div>
 
               <ul className="space-y-3">
 
-                <li className="text-slate-600">
+                {appointments.length === 0 ? (
 
-                  ✔ Appointment confirmed.
+                  <li className="text-slate-500">
+                    No notifications available.
+                  </li>
 
-                </li>
+                ) : (
 
-                <li className="text-slate-600">
+                  appointments.map((appointment) => (
 
-                  ✔ Exercise plan updated.
+                    <li
+                      key={appointment.id}
+                      className="border-b pb-2 text-sm text-slate-700"
+                    >
 
-                </li>
+                      {appointment.status === "Accepted" && (
+                        <>
+                          ✅ Appointment accepted by{" "}
+                          <b>{appointment.assignedDoctorName}</b>
+                        </>
+                      )}
 
-                <li className="text-slate-600">
+                      {appointment.status === "Pending" && (
+                        <>
+                          ⏳ Appointment request submitted.
+                        </>
+                      )}
 
-                  ✔ New report uploaded.
+                      {appointment.status === "Cancelled" && (
+                        <>
+                          ❌ Appointment cancelled.
+                        </>
+                      )}
 
-                </li>
+                      {appointment.status === "Completed" && (
+                        <>
+                          ✔ Appointment completed.
+                        </>
+                      )}
+
+                    </li>
+
+                  ))
+
+                )}
 
               </ul>
 
