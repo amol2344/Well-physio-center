@@ -30,89 +30,83 @@ emergencyContact:""
 
 useEffect(()=>{
 
-const loadProfile=async()=>{
+const loadProfile = async () => {
 
-if(!currentUser) return;
+  if (!currentUser) return;
 
-const ref=doc(db,"users",currentUser.uid);
+  try {
 
-const snap=await getDoc(ref);
+    const ref = doc(db, "users", currentUser.uid);
 
-if(snap.exists()){
+    const snap = await getDoc(ref);
 
-setProfile({
-  name: snap.data().name || "",
-  email: currentUser.email,
-  phone: snap.data().phone || "",
-  dob: snap.data().dob || "",
-  gender: snap.data().gender || "",
-  address: snap.data().address || "",
-  emergencyContact: snap.data().emergencyContact || "",
-});
-}else{
+    if (snap.exists()) {
 
-setProfile((prev)=>({
+      const data = snap.data();
 
-...prev,
+      setProfile({
+        name: data.name || "",
+        email: currentUser.email,
+        phone: data.phone || "",
+        dob: data.dob || "",
+        gender: data.gender || "",
+        address: data.address || "",
+        emergencyContact: data.emergencyContact || "",
+      });
 
-email:currentUser.email
+    } else {
 
-}));
+      setProfile({
+        name: "",
+        email: currentUser.email,
+        phone: "",
+        dob: "",
+        gender: "",
+        address: "",
+        emergencyContact: "",
+      });
 
-}
+    }
 
-setLoading(false);
+  } catch (err) {
 
-};
+    console.log(err);
 
-loadProfile();
+  }
 
-},[currentUser]);
-
-const handleChange=(e)=>{
-
-setProfile({
-
-...profile,
-
-[e.target.name]:e.target.value
-
-});
+  setLoading(false);
 
 };
 
-const saveProfile=async()=>{
+const saveProfile = async () => {
 
-try{
-await setDoc(
-    doc(db,"users",currentUser.uid),
-    {
-      
-name:profile.name,
+  if (!currentUser) return;
 
-phone:profile.phone,
+  try {
 
-dob:profile.dob,
+    await setDoc(
+      doc(db, "users", currentUser.uid),
+      {
+        name: profile.name,
+        email: currentUser.email,
+        phone: profile.phone,
+        dob: profile.dob,
+        gender: profile.gender,
+        address: profile.address,
+        emergencyContact: profile.emergencyContact,
+      },
+      { merge: true }
+    );
 
-gender:profile.gender,
+    alert("Profile Updated Successfully!");
 
-address:profile.address,
+  } catch (err) {
 
-emergencyContact:profile.emergencyContact,
+    console.error(err);
 
-    },
-    { merge:true }
-);
+    alert(err.message);
 
-alert("Profile Updated Successfully");
-
-}catch(err){
-
-console.log(err);
-
-alert(err.message);
-
-}
+  }
 
 };
 
