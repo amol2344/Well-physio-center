@@ -33,26 +33,44 @@ export default function Signup() {
   };
 
   const handleSignup = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  if (password !== confirmPassword) {
+    setError("Passwords do not match");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(user, { displayName: name });
-      await createUserDoc(user, name);
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+
+  try {
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    console.log("✅ Auth User Created:", user.uid);
+
+    await updateProfile(user, {
+      displayName: name,
+    });
+
+    console.log("✅ Profile Updated");
+
+    await createUserDoc(user, name);
+
+    console.log("✅ Firestore User Document Created");
+
+    navigate("/");
+
+  } catch (err) {
+    console.error("Signup Error:", err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGoogleSignup = async () => {
     setError("");
