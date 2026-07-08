@@ -85,10 +85,10 @@ const Navbar = () => {
               <div className="absolute -inset-2 bg-gradient-to-r from-teal-500/20 to-orange-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent whitespace-nowrap">
                 Wellness Physio Center
               </span>
-              <span className="text-sm text-slate-500 font-medium flex items-center gap-1">
+              <span className="text-sm text-slate-500 font-medium flex items-center gap-1 whitespace-nowrap">
                 <FiHeart className="text-orange-500" />
                 Physiotherapy
               </span>
@@ -101,7 +101,7 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`relative px-5 py-3 rounded-2xl transition-all duration-400 group ${
+                className={`relative px-5 py-3 rounded-2xl transition-all duration-400 group whitespace-nowrap ${
                   location.pathname === link.path
                     ? "text-teal-700 font-semibold"
                     : "text-slate-600 hover:text-teal-700"
@@ -124,7 +124,7 @@ const Navbar = () => {
 {role === "admin" && (
   <Link
     to="/admin"
-    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300"
+    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300 whitespace-nowrap"
   >
     Admin Panel
   </Link>
@@ -134,7 +134,7 @@ const Navbar = () => {
 {role === "sysadmin" && (
   <Link
     to="/sysadmin"
-    className="px-4 py-2 rounded-xl bg-teal-100 text-teal-700 font-medium hover:bg-teal-200 transition-all duration-300"
+    className="px-4 py-2 rounded-xl bg-teal-100 text-teal-700 font-medium hover:bg-teal-200 transition-all duration-300 whitespace-nowrap"
   >
     SysAdmin Panel
   </Link>
@@ -143,18 +143,18 @@ const Navbar = () => {
   <Link
     to="/patient-dashboard"
     onClick={closeMobileMenu}
-    className="block w-full px-6 py-3 rounded-2xl bg-blue-100 text-blue-700 font-semibold text-center"
+    className="block w-full px-6 py-3 rounded-2xl bg-blue-100 text-blue-700 font-semibold text-center whitespace-nowrap"
   >
     Patient Dashboard
   </Link>
 )}
-                <span className="flex items-center gap-2 text-sm text-slate-600">
+                <span className="flex items-center gap-2 text-sm text-slate-600 whitespace-nowrap">
                   <FiUser className="text-teal-600" />
                   {currentUser.email}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-1 px-4 py-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300"
+                  className="flex items-center gap-1 px-4 py-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 whitespace-nowrap"
                 >
                   <FiLogOut size={16} />
                   Log Out
@@ -164,13 +164,13 @@ const Navbar = () => {
               <div className="flex items-center gap-2 ml-2 pl-4 border-l border-slate-200">
                 <Link
                   to="/login"
-                  className="px-4 py-2 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-slate-100 transition-all duration-300"
+                  className="px-4 py-2 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-slate-100 transition-all duration-300 whitespace-nowrap"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap"
                 >
                   Sign Up
                 </Link>
@@ -180,7 +180,7 @@ const Navbar = () => {
             <Link
               to="/book-appointment"
               onClick={closeMobileMenu}
-              className="ml-4 px-8 py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              className="ml-4 px-8 py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 whitespace-nowrap"
             >
               Book Now
             </Link>
