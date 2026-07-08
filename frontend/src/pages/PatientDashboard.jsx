@@ -33,22 +33,18 @@ export default function PatientDashboard() {
       orderBy("createdAt", "desc")
     );
 
-    const unsubscribe = onSnapshot(
-  q,
-  (snapshot) => {
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    setAppointments(data);
-    setLoading(false);
-  },
-  (error) => {
-    console.error("Firestore Error:", error);
-    setLoading(false);
-  }
-);
+      setAppointments(data);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [currentUser]);
 
   const cancelAppointment = async (id) => {
     const confirmCancel = window.confirm(
@@ -66,9 +62,9 @@ export default function PatientDashboard() {
 
       alert("Appointment cancelled successfully.");
     } catch (err) {
-      console.error(err);
-      alert("Unable to cancel appointment.");
-    }
+    console.error("Cancel Error:", err);
+    alert(err.message);
+}
   };
 
   return (
