@@ -22,7 +22,8 @@ import {
   FiStar,
   FiHeart,
 } from "react-icons/fi";
-
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 const PricingCard = ({ plan, onSelectPlan }) => {
   const planIcons = {
     "First Consultation": {
@@ -311,7 +312,18 @@ const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
           plan_price: planPriceText,
         }
       };
-
+// Save subscription request to Firebase
+await addDoc(collection(db, "planInquiries"), {
+  name: formData.name,
+  email: formData.email,
+  phone: formData.phone,
+  planName: plan.name,
+  planPrice: plan.price,
+  sessionType: formData.sessionType,
+  message: formData.message || "",
+  status: "Pending",
+  createdAt: serverTimestamp(),
+});
       // Send request to backend
       const response = await fetch(`${API_URL}/api/send-email`, {
         method: 'POST',

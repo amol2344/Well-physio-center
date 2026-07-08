@@ -9,7 +9,13 @@ import {
   FiSend,
   FiAlertCircle,
 } from "react-icons/fi";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 
+import { db } from "../firebase/firebase";
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -135,6 +141,14 @@ const Contact = () => {
 
     try {
       // Send request to backend
+      await addDoc(collection(db, "contactSubmissions"), {
+  name: sanitizeInput(formData.name),
+  email: sanitizeInput(formData.email),
+  phone: "",
+  message: sanitizeInput(formData.message),
+  status: "New",
+  createdAt: serverTimestamp(),
+});
       const response = await fetch(`${API_URL}/api/send-email`, {
         method: 'POST',
         headers: {
