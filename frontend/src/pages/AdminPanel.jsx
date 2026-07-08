@@ -51,11 +51,7 @@ const TABS = [
 
 export default function AdminPanel() {
   const { currentUser } = useAuth();
-useEffect(() => {
-  console.log("Current User:", currentUser);
-  console.log("UID:", currentUser?.uid);
-  console.log("Email:", currentUser?.email);
-}, [currentUser]);
+
   const [users, setUsers] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [plans, setPlans] = useState([]);
@@ -116,15 +112,18 @@ useEffect(() => {
   // Live Contact Messages
   // =============================
 
- useEffect(() => {
+  useEffect(() => {
   if (!currentUser) return;
 
+  const q = query(
+    collection(db, "contactRequests"),
+    orderBy("createdAt", "desc")
+  );
+
   const unsubscribe = onSnapshot(
-    query(
-      collection(db, "contactRequests"),
-      orderBy("createdAt", "desc")
-    ),
+    q,
     (snapshot) => {
+      console.log("Contact listener OK");
       setContacts(
         snapshot.docs.map(doc => ({
           id: doc.id,
@@ -132,8 +131,8 @@ useEffect(() => {
         }))
       );
     },
-    (err) => {
-      console.error("Contact Error:", err);
+    (error) => {
+      console.error("CONTACT ERROR:", error);
     }
   );
 
@@ -144,15 +143,19 @@ useEffect(() => {
   // Live Subscription Requests
   // =============================
 
+  useEffect(() => {
  useEffect(() => {
   if (!currentUser) return;
 
+  const q = query(
+    collection(db, "planInquiries"),
+    orderBy("createdAt", "desc")
+  );
+
   const unsubscribe = onSnapshot(
-    query(
-      collection(db, "planInquiries"),
-      orderBy("createdAt", "desc")
-    ),
+    q,
     (snapshot) => {
+      console.log("Contact listener OK");
       setContacts(
         snapshot.docs.map(doc => ({
           id: doc.id,
@@ -160,8 +163,8 @@ useEffect(() => {
         }))
       );
     },
-    (err) => {
-      console.error("Contact Error:", err);
+    (error) => {
+      console.error("CONTACT ERROR:", error);
     }
   );
 
