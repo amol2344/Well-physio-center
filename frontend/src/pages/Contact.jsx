@@ -141,7 +141,7 @@ const Contact = () => {
 
     try {
       // Send request to backend
-      await addDoc(collection(db, "contactSubmissions"), {
+      await addDoc(collection(db, "contactRequests"), {
   name: sanitizeInput(formData.name),
   email: sanitizeInput(formData.email),
   phone: "",

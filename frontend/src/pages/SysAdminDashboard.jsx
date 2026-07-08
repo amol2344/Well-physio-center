@@ -70,7 +70,7 @@ const [appointmentTime, setAppointmentTime] = useState("");
     );
 
     const unsubContacts = onSnapshot(
-      query(collection(db, "contactSubmissions"), orderBy("createdAt", "desc")),
+      query(collection(db, "contactRequests"), orderBy("createdAt", "desc")),
       (snap) => {
         setContacts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
       }
