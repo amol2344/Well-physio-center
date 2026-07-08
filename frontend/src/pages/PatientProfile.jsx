@@ -79,6 +79,10 @@ console.log(currentUser.email);
 
 };
 
+loadProfile();
+
+}, [currentUser]);
+
 const saveProfile = async () => {
 
   if (!currentUser) return;
@@ -107,6 +111,17 @@ const saveProfile = async () => {
   console.log(err.message);
   alert(err.code);
 }
+
+};
+
+const handleChange = (e) => {
+
+  const { name, value } = e.target;
+
+  setProfile((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
 
 };
 

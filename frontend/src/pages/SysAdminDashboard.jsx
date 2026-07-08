@@ -22,9 +22,11 @@ import {
 } from "react-icons/fi";
 import { getDoc } from "firebase/firestore";
 const TABS = [
-  { id: "appointments", label: "Appointments", icon: FiCalendar },
-  { id: "contacts", label: "Contact Messages", icon: FiMail },
-  { id: "plans", label: "Plan Inquiries", icon: FiTag },
+  {
+    id: "appointments",
+    label: "Appointments",
+    icon: FiCalendar,
+  },
 ];
 
 function StatusBadge({ status }) {
