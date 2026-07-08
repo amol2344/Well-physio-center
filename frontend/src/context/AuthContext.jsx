@@ -29,10 +29,19 @@ export function AuthProvider({ children }) {
         // Live-subscribe to the user's Firestore doc so role changes
         // (e.g. an admin promoting them) reflect immediately without re-login.
         const userRef = doc(db, "users", user.uid);
-        unsubProfile = onSnapshot(userRef, (snap) => {
-          setProfile(snap.exists() ? snap.data() : null);
-          setLoading(false);
-        });
+        unsubProfile = onSnapshot(
+  userRef,
+  (snap) => {
+    console.log("User profile:", snap.data());
+
+    setProfile(snap.exists() ? snap.data() : null);
+    setLoading(false);
+  },
+  (error) => {
+    console.error("User profile error:", error);
+    setLoading(false);
+  }
+);
       } else {
         setProfile(null);
         setLoading(false);
