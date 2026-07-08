@@ -115,7 +115,7 @@ export default function AdminPanel() {
   useEffect(() => {
     const unsubscribe = onSnapshot(
       query(
-        collection(db, "contactSubmissions"),
+        collection(db, "contactRequests"),
         orderBy("createdAt", "desc")
       ),
       (snapshot) => {
@@ -216,7 +216,7 @@ export default function AdminPanel() {
 
     try {
       await deleteDoc(
-        doc(db, "contactSubmissions", id)
+        doc(db, "contactRequests", id)
       );
     } catch (err) {
       console.log(err);
@@ -231,7 +231,7 @@ export default function AdminPanel() {
   const markContactRead = async (id) => {
     try {
       await updateDoc(
-        doc(db, "contactSubmissions", id),
+        doc(db, "contactRequests", id),
         {
           status: "Read",
         }
