@@ -102,12 +102,11 @@ const saveProfile = async () => {
     alert("Profile Updated Successfully!");
 
   } catch (err) {
-
-    console.error(err);
-
-    alert(err.message);
-
-  }
+  console.log(err);
+  console.log(err.code);
+  console.log(err.message);
+  alert(err.code);
+}
 
 };
 
