@@ -113,20 +113,23 @@ export default function AdminPanel() {
   // =============================
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(
-        collection(db, "contactRequests"),
-        orderBy("createdAt", "desc")
-      ),
-      (snapshot) => {
-        setContacts(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-        );
-      }
+  const unsubscribe = onSnapshot(
+  query(
+    collection(db, "planInquiries"),
+    orderBy("createdAt", "desc")
+  ),
+  (snapshot) => {
+    setPlans(
+      snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
     );
+  },
+  (error) => {
+    console.error("Plan Error:", error);
+  }
+);
 
     return unsubscribe;
   }, []);
@@ -137,19 +140,22 @@ export default function AdminPanel() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      query(
-        collection(db, "planInquiries"),
-        orderBy("createdAt", "desc")
-      ),
-      (snapshot) => {
-        setPlans(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-        );
-      }
+  query(
+    collection(db, "planInquiries"),
+    orderBy("createdAt", "desc")
+  ),
+  (snapshot) => {
+    setPlans(
+      snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
     );
+  },
+  (error) => {
+    console.error("Plan Error:", error);
+  }
+);
 
     return unsubscribe;
   }, []);
