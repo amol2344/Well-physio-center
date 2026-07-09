@@ -71,34 +71,32 @@ const navigate = useNavigate();
 useEffect(() => {
   if (!currentUser) return;
 
-const q=query(
- collection(db,"planInquiries"),
- where("userId","==",currentUser.uid),
- where("status","==","Approved")
-);
+  const q = query(
+    collection(db, "planInquiries"),
+    where("userId", "==", currentUser.uid),
+    where("status", "==", "Active")
+  );
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
-    if (snapshot.empty) {
-      setSubscription(null);
-      return;
-    }
 
-    const docs = snapshot.docs.map(doc => ({
+    const docs = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
     docs.sort((a, b) => {
       return (
-        (b.createdAt?.seconds || 0) -
-        (a.createdAt?.seconds || 0)
+        (b.purchasedAt?.seconds || 0) -
+        (a.purchasedAt?.seconds || 0)
       );
     });
 
-    setSubscription(docs[0]);
+    setSubscription(docs[0] || null);
+
   });
 
   return unsubscribe;
+
 }, [currentUser]);
   return (
     <div className="min-h-screen bg-slate-100">
@@ -253,7 +251,7 @@ View Profile
     <p className="text-slate-500">
       No subscription purchased.
     </p>
-  ) : subscription.status === "Approved" ? (
+  ) : subscription.status === "Active" ? (
     <div>
 
       <h3 className="text-lg font-semibold text-green-600">
@@ -301,7 +299,7 @@ View Profile
   </li>
 )}
 
-{subscription && subscription.status === "Approved" && (
+{subscription && subscription.status === "Active" && (
   <li className="border-b pb-2 text-green-600">
     ✅ Your {subscription.planName} subscription has been approved.
   </li>
