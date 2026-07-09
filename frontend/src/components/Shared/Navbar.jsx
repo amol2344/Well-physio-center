@@ -69,26 +69,26 @@ const Navbar = () => {
       }`}
     >
      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-4">
           {/* Logo */}
           <Link
             to="/"
             onClick={closeMobileMenu}
-            className="flex items-center space-x-4 group"
+            className="flex items-center space-x-3 group shrink-0"
           >
             <div className="relative">
               <img
                 src={logo}
                 alt="Wellness Physio Center Logo"
-                className="h-12 w-auto transition-all duration-500 group-hover:scale-110"
+                className="h-10 xl:h-12 w-auto transition-all duration-500 group-hover:scale-110"
               />
               <div className="absolute -inset-2 bg-gradient-to-r from-teal-500/20 to-orange-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent whitespace-nowrap">
+            <div className="hidden sm:flex flex-col">
+              <span className="text-lg xl:text-2xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent whitespace-nowrap">
                 Wellness Physio Center
               </span>
-              <span className="text-sm text-slate-500 font-medium flex items-center gap-1 whitespace-nowrap">
+              <span className="hidden xl:flex text-sm text-slate-500 font-medium items-center gap-1 whitespace-nowrap">
                 <FiHeart className="text-orange-500" />
                 Physiotherapy
               </span>
@@ -96,35 +96,37 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-2">
-            {navLinks.map((link, index) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`relative px-5 py-3 rounded-2xl transition-all duration-400 group whitespace-nowrap ${
-                  location.pathname === link.path
-                    ? "text-teal-700 font-semibold"
-                    : "text-slate-600 hover:text-teal-700"
-                }`}
-              >
-                <span className="relative z-10">{link.name}</span>
-                {location.pathname === link.path && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-teal-100 to-orange-100 rounded-2xl" />
-                )}
-                {location.pathname !== link.path && (
-                  <div className="absolute inset-0 bg-slate-100 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                )}
-              </Link>
-            ))}
+          <nav className="hidden xl:flex items-center flex-1 justify-end min-w-0">
+            <div className="flex items-center">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative px-3 2xl:px-4 py-2.5 rounded-2xl transition-all duration-400 group whitespace-nowrap text-sm 2xl:text-base ${
+                    location.pathname === link.path
+                      ? "text-teal-700 font-semibold"
+                      : "text-slate-600 hover:text-teal-700"
+                  }`}
+                >
+                  <span className="relative z-10">{link.name}</span>
+                  {location.pathname === link.path && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-teal-100 to-orange-100 rounded-2xl" />
+                  )}
+                  {location.pathname !== link.path && (
+                    <div className="absolute inset-0 bg-slate-100 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  )}
+                </Link>
+              ))}
+            </div>
 
             {/* Auth section */}
             {currentUser ? (
-              <div className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200">
+              <div className="flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 shrink-0">
                {/* Admin Button */}
 {role === "admin" && (
   <Link
     to="/admin"
-    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300 whitespace-nowrap"
+    className="px-3 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300 whitespace-nowrap text-sm"
   >
     Admin Panel
   </Link>
@@ -134,7 +136,7 @@ const Navbar = () => {
 {role === "sysadmin" && (
   <Link
     to="/sysadmin"
-    className="px-4 py-2 rounded-xl bg-teal-100 text-teal-700 font-medium hover:bg-teal-200 transition-all duration-300 whitespace-nowrap"
+    className="px-3 py-2 rounded-xl bg-teal-100 text-teal-700 font-medium hover:bg-teal-200 transition-all duration-300 whitespace-nowrap text-sm"
   >
     SysAdmin Panel
   </Link>
@@ -143,34 +145,34 @@ const Navbar = () => {
   <Link
     to="/patient-dashboard"
     onClick={closeMobileMenu}
-    className="block w-full px-6 py-3 rounded-2xl bg-blue-100 text-blue-700 font-semibold text-center whitespace-nowrap"
+    className="px-3 py-2 rounded-xl bg-blue-100 text-blue-700 font-semibold whitespace-nowrap text-sm"
   >
     Patient Dashboard
   </Link>
 )}
-                <span className="flex items-center gap-2 text-sm text-slate-600 whitespace-nowrap">
+                <span className="hidden 2xl:flex items-center gap-2 text-sm text-slate-600 whitespace-nowrap">
                   <FiUser className="text-teal-600" />
                   {currentUser.email}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-1 px-4 py-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 whitespace-nowrap"
+                  className="flex items-center gap-1 px-3 py-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 whitespace-nowrap text-sm"
                 >
                   <FiLogOut size={16} />
                   Log Out
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 ml-2 pl-4 border-l border-slate-200">
+              <div className="flex items-center gap-2 ml-2 pl-3 border-l border-slate-200 shrink-0">
                 <Link
                   to="/login"
-                  className="px-4 py-2 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-slate-100 transition-all duration-300 whitespace-nowrap"
+                  className="px-3 py-2 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-slate-100 transition-all duration-300 whitespace-nowrap text-sm"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  className="px-3 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap text-sm"
                 >
                   Sign Up
                 </Link>
@@ -180,7 +182,7 @@ const Navbar = () => {
             <Link
               to="/book-appointment"
               onClick={closeMobileMenu}
-              className="ml-4 px-8 py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 whitespace-nowrap"
+              className="ml-3 px-4 2xl:px-6 py-2.5 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 whitespace-nowrap text-sm 2xl:text-base shrink-0"
             >
               Book Now
             </Link>
@@ -188,23 +190,23 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-4 rounded-2xl bg-white shadow-lg text-teal-700 z-[60] transition-all duration-300 hover:shadow-2xl hover:scale-105"
+            className="xl:hidden p-3 sm:p-4 rounded-2xl bg-white shadow-lg text-teal-700 z-[60] transition-all duration-300 hover:shadow-2xl hover:scale-105 shrink-0"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <FiX size={28} className="text-teal-700" />
+              <FiX size={26} className="text-teal-700" />
             ) : (
-              <FiMenu size={28} className="text-teal-700" />
+              <FiMenu size={26} className="text-teal-700" />
             )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         <div
-          className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${
+          className={`xl:hidden transition-all duration-500 ease-in-out overflow-hidden ${
             isOpen
-              ? "max-h-[700px] opacity-100 mt-4"
+              ? "max-h-[85vh] overflow-y-auto opacity-100 mt-4"
               : "max-h-0 opacity-0 mt-0"
           }`}
         >
@@ -258,21 +260,22 @@ const Navbar = () => {
     {role === "user" && (
   <Link
     to="/patient-dashboard"
-    className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 font-medium hover:bg-blue-200 transition-all duration-300"
+    onClick={closeMobileMenu}
+    className="block w-full px-6 py-3 rounded-2xl bg-blue-100 text-blue-700 font-medium text-center hover:bg-blue-200 transition-all duration-300"
   >
     Patient Dashboard
   </Link>
 )}
 
-    <div className="px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between">
-      <span className="flex items-center gap-2 text-sm text-slate-600">
-        <FiUser className="text-teal-600" />
-        {currentUser.email}
+    <div className="px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between gap-3">
+      <span className="flex items-center gap-2 text-sm text-slate-600 min-w-0">
+        <FiUser className="text-teal-600 shrink-0" />
+        <span className="truncate">{currentUser.email}</span>
       </span>
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-1 text-red-600 font-medium"
+        className="flex items-center gap-1 text-red-600 font-medium shrink-0"
       >
         <FiLogOut size={16} />
         Log Out
