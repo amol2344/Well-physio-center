@@ -70,10 +70,15 @@ const navigate = useNavigate();
 useEffect(() => {
   if (!currentUser) return;
 
-  const q = query(
-    collection(db, "planInquiries"),
-    where("userId", "==", currentUser.uid)
-  );
+ const q=query(
+
+collection(db,"planInquiries"),
+
+where("userId","==",currentUser.uid),
+
+where("status","==","Active")
+
+)
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     if (snapshot.empty) {
@@ -244,7 +249,7 @@ View Profile
 <div className="bg-white rounded-2xl shadow p-6">
 
   <h2 className="text-xl font-bold mb-4">
-    Current Subscription
+    Current Plan
   </h2>
 
   {!subscription ? (
@@ -263,7 +268,7 @@ View Profile
       </p>
 
       <p>
-        Price : ₹{subscription.price}
+        Price : {subscription.price}
       </p>
 
       <p className="mt-3 text-green-600 font-semibold">

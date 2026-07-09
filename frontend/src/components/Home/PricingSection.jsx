@@ -328,13 +328,15 @@ await addDoc(collection(db, "planInquiries"), {
 
   planName: plan.name,
   price: plan.price,
-  duration: plan.period || "One Session",
+  duration: plan.period || "One Time",
 
-  message: formData.message || "",
+  message: formData.message,
 
   status: "Pending",
 
-  createdAt: serverTimestamp(),
+  purchasedAt: serverTimestamp(),
+  approvedAt: null,
+  completedAt: null,
 });
       // Send request to backend
       const response = await fetch(`${API_URL}/api/send-email`, {

@@ -251,7 +251,17 @@ const unsubscribe = onSnapshot(
   // =============================
   // Mark Contact as Read
   // =============================
+const completePlan = async(id)=>{
 
+await updateDoc(doc(db,"planInquiries",id),{
+
+status:"Completed",
+
+completedAt:serverTimestamp()
+
+})
+
+}
   const markContactRead = async (id) => {
     try {
       await updateDoc(
@@ -272,12 +282,10 @@ const unsubscribe = onSnapshot(
 
   const approvePlan = async (id) => {
     try {
-      await updateDoc(
-        doc(db, "planInquiries", id),
-        {
-          status: "Approved",
-        }
-      );
+     await updateDoc(doc(db, "planInquiries", id), {
+    status: "Active",
+    approvedAt: serverTimestamp(),
+});
     } catch (err) {
       console.log(err);
       alert(err.message);
@@ -1099,7 +1107,12 @@ className="px-5 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transitio
 >
 Reject
 </button>
-
+<button
+onClick={() => completePlan(plan.id)}
+className="bg-green-600 text-white px-4 py-2 rounded"
+>
+Complete
+</button>
 </div>
 
 </div>
