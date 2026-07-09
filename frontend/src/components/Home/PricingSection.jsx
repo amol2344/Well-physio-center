@@ -215,7 +215,6 @@ const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-const { currentUser } = useAuth();
 const navigate = useNavigate();
   // API URL
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
