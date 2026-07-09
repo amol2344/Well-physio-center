@@ -73,8 +73,7 @@ useEffect(() => {
 
   const q = query(
     collection(db, "planInquiries"),
-    where("userId", "==", currentUser.uid),
-    where("status", "==", "Active")
+    where("userId", "==", currentUser.uid)
   );
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -86,8 +85,8 @@ useEffect(() => {
 
     docs.sort((a, b) => {
       return (
-        (b.purchasedAt?.seconds || 0) -
-        (a.purchasedAt?.seconds || 0)
+        (b.createdAt?.seconds || 0) -
+        (a.createdAt?.seconds || 0)
       );
     });
 
@@ -248,34 +247,51 @@ View Profile
   </h2>
 
   {!subscription ? (
-    <p className="text-slate-500">
-      No subscription purchased.
+  <p className="text-slate-500">
+    No subscription purchased.
+  </p>
+) : subscription.status === "Active" ? (
+  <div>
+
+    <h3 className="text-lg font-semibold text-green-600">
+      {subscription.planName}
+    </h3>
+
+    <p>
+      Duration : {subscription.duration}
     </p>
-  ) : subscription.status === "Active" ? (
-    <div>
 
-      <h3 className="text-lg font-semibold text-green-600">
-        {subscription.planName}
-      </h3>
-
-      <p className="mt-2">
-        Duration : {subscription.duration}
-      </p>
-
-      <p>
-        Price : {subscription.price}
-      </p>
-
-      <p className="mt-3 text-green-600 font-semibold">
-        Active
-      </p>
-
-    </div>
-  ) : (
-    <p className="text-slate-500">
-      No active subscription.
+    <p>
+      Price : {subscription.price}
     </p>
-  )}
+
+    <p className="mt-3 text-green-600 font-semibold">
+      Active
+    </p>
+
+  </div>
+
+) : subscription.status === "Completed" ? (
+
+  <div>
+
+    <h3 className="text-lg font-semibold text-gray-600">
+      {subscription.planName}
+    </h3>
+
+    <p className="mt-3 text-red-600 font-semibold">
+      Subscription Expired
+    </p>
+
+  </div>
+
+) : (
+
+  <p className="text-slate-500">
+    No active subscription.
+  </p>
+
+)}
 
 </div>
             {/* Notifications */}
@@ -298,7 +314,11 @@ View Profile
     ❌ Your subscription request has been rejected.
   </li>
 )}
-
+{subscription && subscription.status === "Completed" && (
+  <li className="border-b pb-2 text-orange-600">
+    ⚠️ Your {subscription.planName} subscription has expired.
+  </li>
+)}
 {subscription && subscription.status === "Active" && (
   <li className="border-b pb-2 text-green-600">
     ✅ Your {subscription.planName} subscription has been approved.
