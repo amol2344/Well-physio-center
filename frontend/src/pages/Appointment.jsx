@@ -616,7 +616,7 @@ const Appointment = () => {
     e.preventDefault();
 
   if (!currentUser) {
-   toast.warning(
+   toast.error(
     "Please log in or sign up first to continue."
   );
     navigate("/login");

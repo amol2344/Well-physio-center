@@ -131,7 +131,7 @@ const navigate = useNavigate();
 
   // Require login
   if (!currentUser) {
-    toast.warning(
+    toast.error(
     "Please log in or sign up first to continue."
   );
 

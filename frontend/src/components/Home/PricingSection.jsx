@@ -296,7 +296,7 @@ const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
 if (!currentUser) {
-  toast.warning(
+  toast.error(
     "Please log in or sign up first to continue."
   );
 
