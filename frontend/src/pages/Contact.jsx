@@ -139,16 +139,23 @@ const Contact = () => {
       }
     };
 
-    try {
-      // Send request to backend
-      await addDoc(collection(db, "contactRequests"), {
-  name: sanitizeInput(formData.name),
-  email: sanitizeInput(formData.email),
-  phone: "",
-  message: sanitizeInput(formData.message),
-  status: "New",
-  createdAt: serverTimestamp(),
-});
+   try {
+  console.log("Writing contact request...");
+
+  const docRef = await addDoc(collection(db, "contactRequests"), {
+    name: sanitizeInput(formData.name),
+    email: sanitizeInput(formData.email),
+    phone: "",
+    message: sanitizeInput(formData.message),
+    status: "New",
+    createdAt: serverTimestamp(),
+  });
+
+  console.log("SUCCESS! Document ID:", docRef.id);
+
+} catch (error) {
+  console.error("CONTACT WRITE ERROR:", error);
+}
       const response = await fetch(`${API_URL}/api/send-email`, {
         method: 'POST',
         headers: {
