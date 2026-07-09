@@ -23,7 +23,7 @@ import {
   FiHeart,
 } from "react-icons/fi";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db } from "../../firebase/firebase";
 const PricingCard = ({ plan, onSelectPlan }) => {
   const planIcons = {
     "First Consultation": {
