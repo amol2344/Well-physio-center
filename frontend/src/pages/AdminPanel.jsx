@@ -101,7 +101,11 @@ export default function AdminPanel() {
       setLoading(false);
     }
   };
-
+useEffect(() => {
+  if (currentUser) {
+    console.log("UID:", currentUser.uid);
+  }
+}, [currentUser]);
   useEffect(() => {
     if (currentUser) {
       fetchUsers();
@@ -120,21 +124,21 @@ export default function AdminPanel() {
     orderBy("createdAt", "desc")
   );
 
-  const unsubscribe = onSnapshot(
-    q,
-    (snapshot) => {
-      console.log("Contact listener OK");
-      setContacts(
-        snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-      );
-    },
-    (error) => {
-      console.error("CONTACT ERROR:", error);
-    }
-  );
+const unsubscribe = onSnapshot(
+  q,
+  (snapshot) => {
+    console.log("✅ Contact listener works");
+    setContacts(snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })));
+  },
+  (error) => {
+    console.error("❌ CONTACT ERROR");
+    console.error(error.code);
+    console.error(error.message);
+  }
+);
 
   return unsubscribe;
 }, [currentUser]);
@@ -155,17 +159,16 @@ export default function AdminPanel() {
 const unsubscribe = onSnapshot(
   q,
   (snapshot) => {
-    console.log("Plan listener OK");
-
-    setPlans(
-      snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-    );
+    console.log("✅ Plan listener works");
+    setPlans(snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })));
   },
   (error) => {
-    console.error("PLAN ERROR:", error);
+    console.error("❌ PLAN ERROR");
+    console.error(error.code);
+    console.error(error.message);
   }
 );
 
