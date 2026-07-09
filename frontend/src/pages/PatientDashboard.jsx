@@ -23,6 +23,7 @@ export default function PatientDashboard() {
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState(null);
 const navigate = useNavigate();
   useEffect(() => {
     if (!currentUser) return;
@@ -66,7 +67,37 @@ const navigate = useNavigate();
     alert(err.message);
 }
   };
+useEffect(() => {
+  if (!currentUser) return;
 
+  const q = query(
+    collection(db, "planInquiries"),
+    where("userId", "==", currentUser.uid)
+  );
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    if (snapshot.empty) {
+      setSubscription(null);
+      return;
+    }
+
+    const docs = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    docs.sort((a, b) => {
+      return (
+        (b.createdAt?.seconds || 0) -
+        (a.createdAt?.seconds || 0)
+      );
+    });
+
+    setSubscription(docs[0]);
+  });
+
+  return unsubscribe;
+}, [currentUser]);
   return (
     <div className="min-h-screen bg-slate-100">
 
@@ -210,7 +241,43 @@ View Profile
 </button>
 
             </div>
+<div className="bg-white rounded-2xl shadow p-6">
 
+  <h2 className="text-xl font-bold mb-4">
+    Current Subscription
+  </h2>
+
+  {!subscription ? (
+    <p className="text-slate-500">
+      No subscription purchased.
+    </p>
+  ) : subscription.status === "Approved" ? (
+    <div>
+
+      <h3 className="text-lg font-semibold text-green-600">
+        {subscription.planName}
+      </h3>
+
+      <p className="mt-2">
+        Duration : {subscription.duration}
+      </p>
+
+      <p>
+        Price : ₹{subscription.price}
+      </p>
+
+      <p className="mt-3 text-green-600 font-semibold">
+        Active
+      </p>
+
+    </div>
+  ) : (
+    <p className="text-slate-500">
+      No active subscription.
+    </p>
+  )}
+
+</div>
             {/* Notifications */}
 
             <div className="bg-white rounded-2xl shadow p-6">
@@ -226,7 +293,17 @@ View Profile
               </div>
 
               <ul className="space-y-3">
+{subscription && subscription.status === "Rejected" && (
+  <li className="border-b pb-2 text-red-600">
+    ❌ Your subscription request has been rejected.
+  </li>
+)}
 
+{subscription && subscription.status === "Approved" && (
+  <li className="border-b pb-2 text-green-600">
+    ✅ Your {subscription.planName} subscription has been approved.
+  </li>
+)}
                 {appointments.length === 0 ? (
 
                   <li className="text-slate-500">
