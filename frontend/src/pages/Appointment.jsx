@@ -19,6 +19,8 @@ import {
   FiSend
 } from "react-icons/fi";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+
 
 // InfoCard Component with Prop Validation
 const InfoCard = ({ icon: Icon, title, children, delay = 0 }) => (
@@ -482,6 +484,7 @@ const Appointment = () => {
   const [quickQuestions, setQuickQuestions] = useState({});
   const [status, setStatus] = useState({ submitting: false, success: false, error: null });
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   // API URL
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   const steps = ["Personal Information", "Pain & Symptoms", "Medical History"];
@@ -491,6 +494,7 @@ const Appointment = () => {
     { name: "Chest", icon: "❤" }, { name: "Stomach", icon: "🍎" }, { name: "Hips", icon: "🔄" },
     { name: "Legs", icon: "🚶" }, { name: "Knees", icon: "🦵" }, { name: "Feet", icon: "👣" },
   ];
+
 
   // Auto-fill email from the logged-in Firebase account so the appointment
   // record can never be tied to a different email than the authenticated user.
@@ -611,6 +615,13 @@ const Appointment = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+  if (!currentUser) {
+   toast.warning(
+    "Please log in or sign up first to continue."
+  );
+    navigate("/login");
+    return;
+  }
     // Guard against duplicate submissions (double click / double tap)
     if (status.submitting) return;
 

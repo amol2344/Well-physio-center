@@ -16,7 +16,14 @@ import {
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase";
+
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+
 const Contact = () => {
+  const { currentUser } = useAuth();
+const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -120,13 +127,26 @@ const Contact = () => {
   };
 
   const onSubmit = async (event) => {
-    event.preventDefault();
+      event.preventDefault();
 
-    // Validate form
-    if (!validateForm()) {
-      toast.error("Please fix the form errors before submitting.");
-      return;
-    }
+  // Require login
+  if (!currentUser) {
+    toast.warning(
+    "Please log in or sign up first to continue."
+  );
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 1500);
+
+    return;
+  }
+
+  // Validate form
+  if (!validateForm()) {
+    toast.error("Please fix the form errors before submitting.");
+    return;
+  }
     setStatus({ submitting: true, success: false, error: null });
 
     // Prepare API request data

@@ -25,6 +25,8 @@ import {
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -213,7 +215,8 @@ const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-
+const { currentUser } = useAuth();
+const navigate = useNavigate();
   // API URL
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -293,7 +296,15 @@ const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
  
   const handleSubmit = async (e) => {
     e.preventDefault();
+if (!currentUser) {
+  toast.warning(
+    "Please log in or sign up first to continue."
+  );
 
+  navigate("/login");
+
+  return;
+}
     // Validate form first
     if (!validateForm()) return;
 
