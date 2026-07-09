@@ -330,11 +330,12 @@ await addDoc(collection(db, "planInquiries"), {
   price: plan.price,
   duration: plan.period || "One Time",
 
-  message: formData.message,
+  message: formData.message || "",
 
   status: "Pending",
 
-  purchasedAt: serverTimestamp(),
+  createdAt: serverTimestamp(),
+
   approvedAt: null,
   completedAt: null,
 });
