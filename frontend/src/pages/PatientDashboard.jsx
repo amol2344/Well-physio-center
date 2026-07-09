@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";import {
   onSnapshot,
   doc,
   updateDoc,
+  
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase";
@@ -70,15 +71,11 @@ const navigate = useNavigate();
 useEffect(() => {
   if (!currentUser) return;
 
- const q=query(
-
-collection(db,"planInquiries"),
-
-where("userId","==",currentUser.uid),
-
-where("status","==","Active")
-
-)
+const q=query(
+ collection(db,"planInquiries"),
+ where("userId","==",currentUser.uid),
+ where("status","==","Approved")
+);
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     if (snapshot.empty) {
