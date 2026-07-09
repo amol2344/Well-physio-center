@@ -320,14 +320,20 @@ const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
       };
 // Save subscription request to Firebase
 await addDoc(collection(db, "planInquiries"), {
-     userId: currentUser.uid,
+  userId: currentUser.uid,
 
   name: formData.name,
   email: formData.email,
   phone: formData.phone,
-  plan: plan.name,
+
+  planName: plan.name,
+  price: plan.price,
+  duration: plan.period || "One Session",
+
   message: formData.message || "",
+
   status: "Pending",
+
   createdAt: serverTimestamp(),
 });
       // Send request to backend
