@@ -143,7 +143,7 @@ export default function AdminPanel() {
   // Live Subscription Requests
   // =============================
 
-  useEffect(() => {
+  
  useEffect(() => {
   if (!currentUser) return;
 
@@ -152,21 +152,22 @@ export default function AdminPanel() {
     orderBy("createdAt", "desc")
   );
 
-  const unsubscribe = onSnapshot(
-    q,
-    (snapshot) => {
-      console.log("Contact listener OK");
-      setContacts(
-        snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-      );
-    },
-    (error) => {
-      console.error("CONTACT ERROR:", error);
-    }
-  );
+const unsubscribe = onSnapshot(
+  q,
+  (snapshot) => {
+    console.log("Plan listener OK");
+
+    setPlans(
+      snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+    );
+  },
+  (error) => {
+    console.error("PLAN ERROR:", error);
+  }
+);
 
   return unsubscribe;
 }, [currentUser]);

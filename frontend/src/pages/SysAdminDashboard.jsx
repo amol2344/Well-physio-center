@@ -62,25 +62,41 @@ const [appointmentTime, setAppointmentTime] = useState("");
     setLoading(true);
 
     const unsubAppointments = onSnapshot(
-      query(collection(db, "appointments"), orderBy("createdAt", "desc")),
-      (snap) => {
-        setAppointments(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-        setLoading(false);
-      }
+  query(collection(db, "appointments"), orderBy("createdAt", "desc")),
+  (snap) => {
+    setAppointments(
+      snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }))
     );
+    setLoading(false);
+  },
+  (error) => {
+    console.error("Appointments Error:", error);
+  }
+);
 
     const unsubContacts = onSnapshot(
       query(collection(db, "contactRequests"), orderBy("createdAt", "desc")),
       (snap) => {
         setContacts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-      }
+          setLoading(false);
+      },
+      (error) => {
+    console.error("contact Error:", error);
+  }
     );
 
     const unsubPlans = onSnapshot(
       query(collection(db, "planInquiries"), orderBy("createdAt", "desc")),
       (snap) => {
         setPlans(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-      }
+          setLoading(false);
+      },
+      (error) => {
+    console.error("plans Error:", error);
+  }
     );
 
     return () => {
