@@ -1,56 +1,99 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiMenu, FiX, FiHeart, FiUser, FiLogOut } from "react-icons/fi";
+import {
+  FiMenu,
+  FiX,
+  FiHeart,
+  FiUser,
+  FiLogOut,
+} from "react-icons/fi";
+
 import logo from "../../assets/logo.png";
+
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
+
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navbarRef = useRef(null);
+
   const { currentUser, role } = useAuth();
-  console.log("Navbar debug:", { currentUser: currentUser?.email, role });
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  const navLinks = [
+    { name: "Home", path: "/" },
+    {
+      name: "Door Step",
+      path: "/doorstep-physiotherapy",
+    },
+    {
+      name: "About",
+      path: "/about-us",
+    },
+    {
+      name: "Exercises",
+      path: "/exercises",
+    },
+    {
+      name: "Appointment",
+      path: "/book-appointment",
+    },
+    {
+      name: "Blog",
+      path: "/blog",
+    },
+    {
+      name: "Experts",
+      path: "/experts",
+    },
+    {
+      name: "Contact",
+      path: "/contact-us",
+    },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setScrolled(scrollY > 30);
+      setScrolled(window.scrollY > 30);
     };
 
-    const handleClickOutside = (event) => {
-      if (navbarRef.current && !navbarRef.current.contains(event.target)) {
+    const handleOutsideClick = (e) => {
+      if (
+        navbarRef.current &&
+        !navbarRef.current.contains(e.target)
+      ) {
         setIsOpen(false);
       }
     };
 
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    window.addEventListener("scroll", handleScroll);
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
+
+    document.body.style.overflow = isOpen
+      ? "hidden"
+      : "unset";
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick
+      );
+
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
-
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Door Step", path: "/doorstep-physiotherapy" },
-    { name: "About", path: "/about-us" },
-    { name: "Exercises", path: "/exercises" },
-    { name: "Appointment", path: "/book-appointment" },
-    { name: "Blog", path: "/blog" },
-    { name: "Experts", path: "/experts" },
-    { name: "Contact", path: "/contact-us" },
-  ];
 
   const closeMobileMenu = () => setIsOpen(false);
 
@@ -62,256 +105,590 @@ const Navbar = () => {
   return (
     <header
       ref={navbarRef}
-      className={`fixed w-full z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500
+      ${
         scrolled
-          ? "bg-white/98 backdrop-blur-xl shadow-2xl py-3 border-b-2 border-teal-100"
-          : "bg-slate-50/95 backdrop-blur-lg py-5 border-b border-transparent"
+          ? "bg-white/95 backdrop-blur-xl shadow-xl border-b border-slate-200 py-3"
+          : "bg-white/80 backdrop-blur-lg py-5"
       }`}
     >
-     <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          {/* Logo */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div className="flex items-center justify-between">
+
+          {/* ================= Logo ================= */}
+
           <Link
             to="/"
             onClick={closeMobileMenu}
-            className="flex items-center space-x-4 group"
+            className="flex items-center gap-3 flex-shrink-0"
           >
-            <div className="relative">
-              <img
-                src={logo}
-                alt="Wellness Physio Center Logo"
-                className="h-12 w-auto transition-all duration-500 group-hover:scale-110"
-              />
-              <div className="absolute -inset-2 bg-gradient-to-r from-teal-500/20 to-orange-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent whitespace-nowrap">
+            <img
+              src={logo}
+              alt="Wellness Physio Center"
+              className="h-10 lg:h-12 w-auto transition-transform duration-300 hover:scale-105"
+            />
+
+            <div className="leading-tight">
+
+              <h1
+                className="
+                text-lg
+                xl:text-xl
+                2xl:text-2xl
+                font-bold
+                bg-gradient-to-r
+                from-teal-700
+                to-orange-600
+                bg-clip-text
+                text-transparent
+                whitespace-nowrap
+              "
+              >
                 Wellness Physio Center
-              </span>
-              <span className="text-sm text-slate-500 font-medium flex items-center gap-1 whitespace-nowrap">
+              </h1>
+
+              <p className="hidden sm:flex items-center gap-1 text-sm text-slate-500">
+
                 <FiHeart className="text-orange-500" />
+
                 Physiotherapy
-              </span>
+
+              </p>
+
             </div>
+
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-2">
-            {navLinks.map((link, index) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`relative px-5 py-3 rounded-2xl transition-all duration-400 group whitespace-nowrap ${
-                  location.pathname === link.path
-                    ? "text-teal-700 font-semibold"
-                    : "text-slate-600 hover:text-teal-700"
-                }`}
-              >
-                <span className="relative z-10">{link.name}</span>
-                {location.pathname === link.path && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-teal-100 to-orange-100 rounded-2xl" />
-                )}
-                {location.pathname !== link.path && (
-                  <div className="absolute inset-0 bg-slate-100 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                )}
-              </Link>
-            ))}
+          {/* Desktop Navigation Starts Here */}
+{/* ================= Desktop Navigation ================= */}
 
-            {/* Auth section */}
-            {currentUser ? (
-              <div className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200">
-               {/* Admin Button */}
-{role === "admin" && (
-  <Link
-    to="/admin"
-    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300 whitespace-nowrap"
-  >
-    Admin Panel
-  </Link>
-)}
+<nav className="hidden xl:flex items-center flex-1 justify-center mx-8">
 
-{/* SysAdmin Button */}
-{role === "sysadmin" && (
-  <Link
-    to="/sysadmin"
-    className="px-4 py-2 rounded-xl bg-teal-100 text-teal-700 font-medium hover:bg-teal-200 transition-all duration-300 whitespace-nowrap"
-  >
-    SysAdmin Panel
-  </Link>
-)}
-{role === "user" && (
-  <Link
-    to="/patient-dashboard"
-    onClick={closeMobileMenu}
-    className="block w-full px-6 py-3 rounded-2xl bg-blue-100 text-blue-700 font-semibold text-center whitespace-nowrap"
-  >
-    Patient Dashboard
-  </Link>
-)}
-                <span className="flex items-center gap-2 text-sm text-slate-600 whitespace-nowrap">
-                  <FiUser className="text-teal-600" />
-                  {currentUser.email}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-1 px-4 py-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 whitespace-nowrap"
-                >
-                  <FiLogOut size={16} />
-                  Log Out
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 ml-2 pl-4 border-l border-slate-200">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-slate-100 transition-all duration-300 whitespace-nowrap"
-                >
-                  Log In
-                </Link>
-                <Link
-                  to="/signup"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
+  <div className="flex items-center gap-1">
 
-            <Link
-              to="/book-appointment"
-              onClick={closeMobileMenu}
-              className="ml-4 px-8 py-3 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 whitespace-nowrap"
-            >
-              Book Now
-            </Link>
-          </nav>
+    {navLinks.map((link) => {
 
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-4 rounded-2xl bg-white shadow-lg text-teal-700 z-[60] transition-all duration-300 hover:shadow-2xl hover:scale-105"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? (
-              <FiX size={28} className="text-teal-700" />
-            ) : (
-              <FiMenu size={28} className="text-teal-700" />
-            )}
-          </button>
-        </div>
+      const active = location.pathname === link.path;
 
-        {/* Mobile Menu */}
-        <div
-          className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${
-            isOpen
-              ? "max-h-[700px] opacity-100 mt-4"
-              : "max-h-0 opacity-0 mt-0"
-          }`}
+      return (
+
+        <Link
+          key={link.path}
+          to={link.path}
+          className={`
+          relative
+          px-3
+          2xl:px-4
+          py-2.5
+          rounded-xl
+          font-medium
+          whitespace-nowrap
+          transition-all
+          duration-300
+
+          ${
+            active
+              ? "text-teal-700"
+              : "text-slate-600 hover:text-teal-700"
+          }
+          `}
         >
-          <div className="bg-white rounded-3xl shadow-2xl border-2 border-slate-100 p-6">
-            <nav className="flex flex-col space-y-3">
-              {navLinks.map((link, index) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={closeMobileMenu}
-                  className={`px-6 py-4 rounded-2xl transition-all duration-300 flex items-center justify-between ${
-                    location.pathname === link.path
-                      ? "bg-gradient-to-r from-teal-500 to-orange-500 text-white font-semibold shadow-lg"
-                      : "bg-slate-50 text-slate-700 hover:bg-slate-100"
-                  }`}
-                  style={{
-                    transitionDelay: isOpen ? `${index * 50}ms` : "0ms",
-                  }}
-                >
-                  <span>{link.name}</span>
-                  {location.pathname === link.path && (
-                    <FiHeart size={18} />
-                  )}
-                </Link>
-              ))}
 
-              {/* Auth section - mobile */}
-             {/* Auth section - mobile */}
-{currentUser ? (
-  <div className="mt-2 space-y-3">
+          {active && (
+            <span
+              className="
+              absolute
+              inset-0
+              rounded-xl
+              bg-gradient-to-r
+              from-teal-100
+              to-orange-100
+              "
+            />
+          )}
 
-    {role === "admin" && (
-      <Link
-        to="/admin"
-        onClick={closeMobileMenu}
-        className="block w-full px-6 py-3 rounded-2xl bg-orange-100 text-orange-700 font-semibold text-center"
+          <span className="relative z-10">
+            {link.name}
+          </span>
+
+        </Link>
+
+      );
+
+    })}
+
+  </div>
+
+</nav>
+
+{/* ================= Desktop Right Section ================= */}
+
+<div className="hidden xl:flex items-center gap-3 flex-shrink-0">
+
+  {currentUser ? (
+
+    <>
+
+      {/* Dashboard Button */}
+
+      {role === "admin" && (
+
+        <Link
+          to="/admin"
+          className="
+          px-4
+          py-2
+          rounded-xl
+          bg-orange-100
+          text-orange-700
+          font-medium
+          hover:bg-orange-200
+          transition
+          whitespace-nowrap
+          "
+        >
+          Admin Panel
+        </Link>
+
+      )}
+
+      {role === "sysadmin" && (
+
+        <Link
+          to="/sysadmin-dashboard"
+          className="
+          px-4
+          py-2
+          rounded-xl
+          bg-teal-100
+          text-teal-700
+          font-medium
+          hover:bg-teal-200
+          transition
+          whitespace-nowrap
+          "
+        >
+          SysAdmin
+        </Link>
+
+      )}
+
+      {role === "user" && (
+
+        <Link
+          to="/patient-dashboard"
+          className="
+          px-4
+          py-2
+          rounded-xl
+          bg-blue-100
+          text-blue-700
+          font-medium
+          hover:bg-blue-200
+          transition
+          whitespace-nowrap
+          "
+        >
+          Dashboard
+        </Link>
+
+      )}
+
+      {/* Email */}
+
+      <div
+        className="
+        hidden
+        2xl:flex
+        items-center
+        gap-2
+        px-3
+        py-2
+        rounded-xl
+        bg-slate-50
+        "
       >
-        Admin Panel
-      </Link>
-    )}
 
-    {role === "sysadmin" && (
-      <Link
-        to="/sysadmin-dashboard"
-        onClick={closeMobileMenu}
-        className="block w-full px-6 py-3 rounded-2xl bg-teal-100 text-teal-700 font-semibold text-center"
-      >
-        SysAdmin Dashboard
-      </Link>
-    )}
-    {role === "user" && (
-  <Link
-    to="/patient-dashboard"
-    className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 font-medium hover:bg-blue-200 transition-all duration-300"
-  >
-    Patient Dashboard
-  </Link>
-)}
-
-    <div className="px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between">
-      <span className="flex items-center gap-2 text-sm text-slate-600">
         <FiUser className="text-teal-600" />
-        {currentUser.email}
-      </span>
+
+        <span className="text-sm text-slate-600 max-w-[170px] truncate">
+
+          {currentUser.email}
+
+        </span>
+
+      </div>
+
+      {/* Logout */}
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-1 text-red-600 font-medium"
+        className="
+        flex
+        items-center
+        gap-2
+        px-4
+        py-2
+        rounded-xl
+        hover:bg-red-50
+        text-slate-600
+        hover:text-red-600
+        transition
+        "
       >
-        <FiLogOut size={16} />
-        Log Out
+
+        <FiLogOut />
+
+        Logout
+
       </button>
-    </div>
+
+    </>
+
+  ) : (
+
+    <>
+
+      <Link
+        to="/login"
+        className="
+        px-4
+        py-2
+        rounded-xl
+        hover:bg-slate-100
+        text-slate-600
+        hover:text-teal-700
+        transition
+        "
+      >
+        Log In
+      </Link>
+
+      <Link
+        to="/signup"
+        className="
+        px-5
+        py-2.5
+        rounded-xl
+        bg-gradient-to-r
+        from-teal-600
+        to-orange-600
+        text-white
+        font-medium
+        shadow-md
+        hover:shadow-xl
+        transition
+        "
+      >
+        Sign Up
+      </Link>
+
+    </>
+
+  )}
+
+  {/* Book Appointment */}
+
+  <Link
+    to="/book-appointment"
+    className="
+    ml-2
+    px-6
+    py-2.5
+    rounded-xl
+    bg-gradient-to-r
+    from-teal-600
+    to-orange-600
+    text-white
+    font-semibold
+    shadow-lg
+    hover:shadow-2xl
+    hover:-translate-y-0.5
+    transition-all
+    whitespace-nowrap
+    "
+  >
+    Book Now
+  </Link>
+
+</div>
+
+{/* ================= Mobile Menu Button ================= */}
+
+<button
+  className="
+  xl:hidden
+  p-3
+  rounded-xl
+  bg-white
+  shadow-md
+  text-teal-700
+  transition
+  hover:shadow-lg
+  "
+  onClick={() => setIsOpen(!isOpen)}
+>
+
+  {isOpen ? <FiX size={26} /> : <FiMenu size={26} />}
+
+</button>
+{/* ================= Mobile Menu ================= */}
+
+<div
+  className={`xl:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+    isOpen
+      ? "max-h-[900px] opacity-100 mt-4"
+      : "max-h-0 opacity-0 mt-0"
+  }`}
+>
+  <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+
+    {/* Navigation Links */}
+
+    <nav className="flex flex-col py-3">
+
+      {navLinks.map((link) => {
+
+        const active = location.pathname === link.path;
+
+        return (
+          <Link
+            key={link.path}
+            to={link.path}
+            onClick={closeMobileMenu}
+            className={`
+              flex
+              items-center
+              justify-between
+              px-6
+              py-4
+              mx-3
+              my-1
+              rounded-2xl
+              transition-all
+              duration-300
+
+              ${
+                active
+                  ? "bg-gradient-to-r from-teal-600 to-orange-600 text-white shadow-lg"
+                  : "text-slate-700 hover:bg-slate-100"
+              }
+            `}
+          >
+            <span className="font-medium">
+              {link.name}
+            </span>
+
+            {active && <FiHeart />}
+          </Link>
+        );
+
+      })}
+
+      {/* Divider */}
+
+      <div className="border-t border-slate-200 my-4"></div>
+
+      {/* ================= Auth Section ================= */}
+
+      {currentUser ? (
+
+        <div className="px-4 space-y-3">
+
+          {/* Dashboard */}
+
+          {role === "admin" && (
+
+            <Link
+              to="/admin"
+              onClick={closeMobileMenu}
+              className="
+              block
+              w-full
+              text-center
+              py-3
+              rounded-2xl
+              bg-orange-100
+              text-orange-700
+              font-semibold
+              "
+            >
+              Admin Panel
+            </Link>
+
+          )}
+
+          {role === "sysadmin" && (
+
+            <Link
+              to="/sysadmin-dashboard"
+              onClick={closeMobileMenu}
+              className="
+              block
+              w-full
+              text-center
+              py-3
+              rounded-2xl
+              bg-teal-100
+              text-teal-700
+              font-semibold
+              "
+            >
+              SysAdmin Dashboard
+            </Link>
+
+          )}
+
+          {role === "user" && (
+
+            <Link
+              to="/patient-dashboard"
+              onClick={closeMobileMenu}
+              className="
+              block
+              w-full
+              text-center
+              py-3
+              rounded-2xl
+              bg-blue-100
+              text-blue-700
+              font-semibold
+              "
+            >
+              Patient Dashboard
+            </Link>
+
+          )}
+
+          {/* Email */}
+
+          <div className="flex items-center gap-3 bg-slate-100 rounded-2xl p-4">
+
+            <FiUser className="text-xl text-teal-600" />
+
+            <div className="overflow-hidden">
+
+              <p className="text-xs text-slate-500">
+                Logged in as
+              </p>
+
+              <p className="font-medium truncate">
+                {currentUser.email}
+              </p>
+
+            </div>
+
+          </div>
+
+          {/* Logout */}
+
+          <button
+            onClick={handleLogout}
+            className="
+            w-full
+            flex
+            items-center
+            justify-center
+            gap-2
+            py-3
+            rounded-2xl
+            bg-red-50
+            text-red-600
+            font-semibold
+            hover:bg-red-100
+            transition
+            "
+          >
+            <FiLogOut />
+
+            Logout
+
+          </button>
+
+        </div>
+
+      ) : (
+
+        <div className="px-4 flex flex-col gap-3">
+
+          <Link
+            to="/login"
+            onClick={closeMobileMenu}
+            className="
+            w-full
+            text-center
+            py-3
+            rounded-2xl
+            border
+            border-slate-300
+            hover:bg-slate-100
+            transition
+            "
+          >
+            Log In
+          </Link>
+
+          <Link
+            to="/signup"
+            onClick={closeMobileMenu}
+            className="
+            w-full
+            text-center
+            py-3
+            rounded-2xl
+            bg-gradient-to-r
+            from-teal-600
+            to-orange-600
+            text-white
+            font-semibold
+            shadow-lg
+            "
+          >
+            Sign Up
+          </Link>
+
+        </div>
+
+      )}
+
+      {/* Book Appointment */}
+
+      <div className="px-4 mt-5 mb-3">
+
+        <Link
+          to="/book-appointment"
+          onClick={closeMobileMenu}
+          className="
+          block
+          w-full
+          text-center
+          py-4
+          rounded-2xl
+          bg-gradient-to-r
+          from-teal-600
+          to-orange-600
+          text-white
+          font-bold
+          shadow-xl
+          hover:shadow-2xl
+          transition
+          "
+        >
+          Book Appointment
+        </Link>
+
+      </div>
+
+    </nav>
 
   </div>
-) : (
-                <div className="mt-2 flex gap-3">
-                  <Link
-                    to="/login"
-                    onClick={closeMobileMenu}
-                    className="flex-1 px-6 py-4 rounded-2xl bg-slate-50 text-slate-700 font-medium text-center hover:bg-slate-100 transition-all duration-300"
-                  >
-                    Log In
-                  </Link>
-                  <Link
-                    to="/signup"
-                    onClick={closeMobileMenu}
-                    className="flex-1 px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold text-center shadow-lg"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              )}
+</div>
 
-              <Link
-                to="/book-appointment"
-                onClick={closeMobileMenu}
-                className="mt-4 px-6 py-4 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg text-center"
-              >
-                Book Your Appointment
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
+</div></div>
+
+</header>
+);
 };
 
 export default Navbar;
