@@ -117,6 +117,35 @@ useEffect(() => {
   // =============================
 
 
+useEffect(() => {
+  if (!currentUser) return;
+
+  const q = query(
+    collection(db, "contactRequests"),
+    orderBy("createdAt", "desc")
+  );
+
+  const unsubscribe = onSnapshot(
+    q,
+    (snapshot) => {
+      console.log("✅ Contact listener works");
+
+      setContacts(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+    },
+    (error) => {
+      console.log("CONTACT LISTENER FAILED");
+      console.log(error.code);
+      console.log(error.message);
+    }
+  );
+
+  return unsubscribe;
+}, [currentUser]);
 
   // =============================
   // Live Subscription Requests
