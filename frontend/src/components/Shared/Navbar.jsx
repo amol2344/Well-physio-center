@@ -10,7 +10,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navbarRef = useRef(null);
-  const { currentUser, role } = useAuth();
+const { currentUser, role, name } = useAuth();
   console.log("Navbar debug:", { currentUser: currentUser?.email, role });
 
   useEffect(() => {
@@ -152,7 +152,7 @@ const Navbar = () => {
 )}
                 <span className="hidden 2xl:flex items-center gap-2 text-sm text-slate-600 whitespace-nowrap">
                   <FiUser className="text-teal-600" />
-                  {currentUser.email}
+                  {name || currentUser.email}
                 </span>
                 <button
                   onClick={handleLogout}
@@ -270,7 +270,7 @@ const Navbar = () => {
     <div className="px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between gap-3">
       <span className="flex items-center gap-2 text-sm text-slate-600 min-w-0">
         <FiUser className="text-teal-600 shrink-0" />
-        <span className="truncate">{currentUser.email}</span>
+        <span className="truncate"> {name || currentUser.email}</span>
       </span>
 
       <button
