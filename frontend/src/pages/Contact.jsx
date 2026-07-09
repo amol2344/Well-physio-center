@@ -119,25 +119,80 @@ const Contact = () => {
     setFormErrors({});
   };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+const onSubmit = async (event) => {
+  event.preventDefault();
 
-    // Validate form
-    if (!validateForm()) {
-      toast.error("Please fix the form errors before submitting.");
-      return;
+  if (!validateForm()) {
+    toast.error("Please fix the form errors before submitting.");
+    return;
+  }
+
+  setStatus({
+    submitting: true,
+    success: false,
+    error: null,
+  });
+
+  const requestData = {
+    type: "contact",
+    data: {
+      user_name: sanitizeInput(formData.name),
+      user_email: sanitizeInput(formData.email),
+      message: sanitizeInput(formData.message),
+    },
+  };
+
+  try {
+    // ================= FIRESTORE =================
+    console.log("Writing contact request...");
+
+    const docRef = await addDoc(collection(db, "contactRequests"), {
+      name: sanitizeInput(formData.name),
+      email: sanitizeInput(formData.email),
+      phone: "",
+      message: sanitizeInput(formData.message),
+      status: "New",
+      createdAt: serverTimestamp(),
+    });
+
+    console.log("Firestore Success");
+    console.log("Document ID:", docRef.id);
+
+    // ================= EMAIL =================
+    const response = await fetch(`${API_URL}/api/send-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message);
     }
-    setStatus({ submitting: true, success: false, error: null });
 
-    // Prepare API request data
-    const requestData = {
-      type: 'contact',
-      data: {
-        user_name: sanitizeInput(formData.name),
-        user_email: sanitizeInput(formData.email),
-        message: sanitizeInput(formData.message),
-      }
-    };
+    setStatus({
+      submitting: false,
+      success: true,
+      error: null,
+    });
+
+    resetForm();
+    toast.success("Your message has been sent successfully!");
+  } catch (err) {
+    console.error("Form submission error:", err);
+
+    setStatus({
+      submitting: false,
+      success: false,
+      error: err.message,
+    });
+
+    toast.error(err.message);
+  }
+};
 
 try {
   console.log("Writing contact request...");
