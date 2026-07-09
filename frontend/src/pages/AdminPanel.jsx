@@ -252,15 +252,20 @@ const unsubscribe = onSnapshot(
   // =============================
   // Mark Contact as Read
   // =============================
-const completePlan = async(id)=>{
+const completePlan = async (id) => {
+  try {
+    await updateDoc(doc(db, "planInquiries", id), {
+      status: "Completed",
+      completedAt: serverTimestamp(),
+    });
 
-await updateDoc(doc(db,"planInquiries",id),{
+    alert("Subscription marked as completed successfully ✅");
 
-status:"Completed",
-
-completedAt:serverTimestamp()
-
-})
+  } catch (err) {
+    console.log(err);
+    alert(err.message);
+  }
+};
 
 }
   const markContactRead = async (id) => {
@@ -282,34 +287,37 @@ completedAt:serverTimestamp()
   // =============================
 
   const approvePlan = async (id) => {
-    try {
-     await updateDoc(doc(db, "planInquiries", id), {
-    status: "Active",
-    approvedAt: serverTimestamp(),
-});
-    } catch (err) {
-      console.log(err);
-      alert(err.message);
-    }
-  };
+  try {
+    await updateDoc(doc(db, "planInquiries", id), {
+      status: "Active",
+      approvedAt: serverTimestamp(),
+    });
+
+    alert("Subscription approved successfully ✅");
+
+  } catch (err) {
+    console.log(err);
+    alert(err.message);
+  }
+};
 
   // =============================
   // Reject Subscription
   // =============================
 
   const rejectPlan = async (id) => {
-    try {
-      await updateDoc(
-        doc(db, "planInquiries", id),
-        {
-          status: "Rejected",
-        }
-      );
-    } catch (err) {
-      console.log(err);
-      alert(err.message);
-    }
-  };
+  try {
+    await updateDoc(doc(db, "planInquiries", id), {
+      status: "Rejected",
+    });
+
+    alert("Subscription rejected successfully ❌");
+
+  } catch (err) {
+    console.log(err);
+    alert(err.message);
+  }
+};
 
   // =============================
   // Delete Subscription
@@ -1095,25 +1103,33 @@ Call
 
 )}
 
-<button
-onClick={() => approvePlan(plan.id)}
-className="px-5 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
->
-Approve
-</button>
+{plan.status === "Pending" && (
+  <>
+    <button
+      onClick={() => approvePlan(plan.id)}
+      className="px-5 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700"
+    >
+      Approve
+    </button>
 
-<button
-onClick={() => rejectPlan(plan.id)}
-className="px-5 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition"
->
-Reject
-</button>
-<button
-onClick={() => completePlan(plan.id)}
-className="bg-green-600 text-white px-4 py-2 rounded"
->
-Complete
-</button>
+    <button
+      onClick={() => rejectPlan(plan.id)}
+      className="px-5 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
+    >
+      Reject
+    </button>
+  </>
+)}
+
+
+{plan.status === "Active" && (
+  <button
+    onClick={() => completePlan(plan.id)}
+    className="px-5 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+  >
+    Complete
+  </button>
+)}
 </div>
 
 </div>
