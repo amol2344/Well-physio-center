@@ -116,32 +116,7 @@ useEffect(() => {
   // Live Contact Messages
   // =============================
 
-  useEffect(() => {
-  if (!currentUser) return;
 
-  const q = query(
-    collection(db, "contactRequests"),
-    orderBy("createdAt", "desc")
-  );
-
-const unsubscribe = onSnapshot(
-  q,
-  (snapshot) => {
-    console.log("✅ Contact listener works");
-    setContacts(snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })));
-  },
-  (error) => {
-    console.error("❌ CONTACT ERROR");
-    console.error(error.code);
-    console.error(error.message);
-  }
-);
-
-  return unsubscribe;
-}, [currentUser]);
 
   // =============================
   // Live Subscription Requests
@@ -155,7 +130,6 @@ const unsubscribe = onSnapshot(
     collection(db, "planInquiries"),
     orderBy("createdAt", "desc")
   );
-
 const unsubscribe = onSnapshot(
   q,
   (snapshot) => {
@@ -166,9 +140,9 @@ const unsubscribe = onSnapshot(
     })));
   },
   (error) => {
-    console.error("❌ PLAN ERROR");
-    console.error(error.code);
-    console.error(error.message);
+    console.log("PLAN LISTENER FAILED");
+    console.log(error.code);
+    console.log(error.message);
   }
 );
 
