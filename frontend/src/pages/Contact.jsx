@@ -139,7 +139,7 @@ const Contact = () => {
       }
     };
 
-   try {
+try {
   console.log("Writing contact request...");
 
   const docRef = await addDoc(collection(db, "contactRequests"), {
@@ -151,10 +151,13 @@ const Contact = () => {
     createdAt: serverTimestamp(),
   });
 
-  console.log("SUCCESS! Document ID:", docRef.id);
+  console.log("Firestore Success");
+  console.log("Document ID:", docRef.id);
 
-} catch (error) {
-  console.error("CONTACT WRITE ERROR:", error);
+} catch (err) {
+  console.error("Firestore Error:", err);
+  alert(err.message);
+  return; // STOP HERE if Firestore fails
 }
       const response = await fetch(`${API_URL}/api/send-email`, {
         method: 'POST',
