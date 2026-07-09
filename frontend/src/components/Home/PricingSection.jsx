@@ -24,6 +24,11 @@ import {
 } from "react-icons/fi";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
+
+
+
+
 const PricingCard = ({ plan, onSelectPlan }) => {
   const planIcons = {
     "First Consultation": {
@@ -197,6 +202,8 @@ PricingCard.propTypes = {
 };
 
 const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
+    const { currentUser } = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -314,6 +321,8 @@ const PlanModal = ({ plan, isOpen, onClose, onSubmit }) => {
       };
 // Save subscription request to Firebase
 await addDoc(collection(db, "planInquiries"), {
+     userId: currentUser.uid,
+
   name: formData.name,
   email: formData.email,
   phone: formData.phone,
