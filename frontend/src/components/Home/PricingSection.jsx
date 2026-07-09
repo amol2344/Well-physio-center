@@ -24,8 +24,7 @@ import {
 } from "react-icons/fi";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
-import { useAuth } from "../context/AuthContext";
-
+import { useAuth } from "../../context/AuthContext";
 
 
 
