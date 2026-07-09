@@ -267,7 +267,7 @@ const completePlan = async (id) => {
   }
 };
 
-}
+
   const markContactRead = async (id) => {
     try {
       await updateDoc(
