@@ -1,27 +1,41 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FiMenu, FiX, FiHeart, FiUser, FiLogOut } from "react-icons/fi";
+import {
+  FiMenu,
+  FiX,
+  FiHeart,
+  FiUser,
+  FiLogOut,
+  FiChevronDown,
+  FiShield,
+  FiGrid,
+} from "react-icons/fi";
 import logo from "../../assets/logo.png";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const navbarRef = useRef(null);
+  const profileRef = useRef(null);
   const { currentUser, role, name } = useAuth();
   console.log("Navbar debug:", { currentUser: currentUser?.email, role });
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setScrolled(scrollY > 30);
+      setScrolled(window.scrollY > 30);
     };
 
     const handleClickOutside = (event) => {
       if (navbarRef.current && !navbarRef.current.contains(event.target)) {
         setIsOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
       }
     };
 
@@ -56,20 +70,33 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
+    setProfileOpen(false);
     closeMobileMenu();
   };
+
+  const panelLink =
+    role === "admin"
+      ? { to: "/admin", label: "Admin Panel" }
+      : role === "sysadmin"
+      ? { to: "/sysadmin", label: "SysAdmin Panel" }
+      : role === "user"
+      ? { to: "/patient-dashboard", label: "Patient Dashboard" }
+      : null;
+
+  const displayName = name || currentUser?.email || "";
+  const initial = displayName.trim().charAt(0).toUpperCase() || "U";
 
   return (
     <header
       ref={navbarRef}
       className={`fixed w-full z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-white/98 backdrop-blur-xl shadow-2xl py-3 border-b-2 border-teal-100"
-          : "bg-slate-50/95 backdrop-blur-lg py-5 border-b border-transparent"
+          ? "bg-white/95 backdrop-blur-xl shadow-lg py-2.5 border-b border-teal-100"
+          : "bg-slate-50/90 backdrop-blur-lg py-4 border-b border-transparent"
       }`}
     >
-     <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center gap-3">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center gap-4">
           {/* Logo */}
           <Link
             to="/"
@@ -80,102 +107,114 @@ const Navbar = () => {
               <img
                 src={logo}
                 alt="Wellness Physio Center Logo"
-                className="h-10 xl:h-12 w-auto transition-all duration-500 group-hover:scale-110"
+                className="h-9 lg:h-10 w-auto transition-all duration-500 group-hover:scale-110"
               />
               <div className="absolute -inset-2 bg-gradient-to-r from-teal-500/20 to-orange-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
             </div>
-            <div className="hidden sm:flex flex-col">
-              <span className="text-lg xl:text-2xl font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent whitespace-nowrap">
+            <div className="hidden sm:flex flex-col leading-tight">
+              <span className="text-base lg:text-lg font-bold bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent whitespace-nowrap">
                 Wellness Physio Center
               </span>
-              <span className="hidden xl:flex text-sm text-slate-500 font-medium items-center gap-1 whitespace-nowrap">
-                <FiHeart className="text-orange-500" />
+              <span className="hidden xl:flex text-xs text-slate-500 font-medium items-center gap-1 whitespace-nowrap">
+                <FiHeart className="text-orange-500" size={11} />
                 Physiotherapy
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation - bounded, scrollable strip so it can NEVER overlap logo or auth section */}
-          <nav
-            className="hidden xl:flex items-center gap-1 flex-1 min-w-0 overflow-x-auto [&::-webkit-scrollbar]:hidden"
-            style={{ scrollbarWidth: "none" }}
-          >
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`relative px-3 2xl:px-4 py-2.5 rounded-2xl transition-all duration-400 group whitespace-nowrap text-sm 2xl:text-base shrink-0 ${
-                  location.pathname === link.path
-                    ? "text-teal-700 font-semibold"
-                    : "text-slate-600 hover:text-teal-700"
-                }`}
-              >
-                <span className="relative z-10">{link.name}</span>
-                {location.pathname === link.path && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-teal-100 to-orange-100 rounded-2xl" />
-                )}
-                {location.pathname !== link.path && (
-                  <div className="absolute inset-0 bg-slate-100 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                )}
-              </Link>
-            ))}
+          {/* Desktop Navigation — segmented pill strip, fixed sizing at every breakpoint */}
+          <nav className="hidden lg:flex items-center flex-1 min-w-0 justify-center">
+            <div className="flex items-center gap-0.5 bg-white/60 border border-slate-200/70 rounded-full px-1.5 py-1.5 shadow-sm min-w-0 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none" }}>
+              {navLinks.map((link) => {
+                const active = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`relative px-3 py-2 rounded-full transition-all duration-300 whitespace-nowrap text-[13px] font-medium shrink-0 ${
+                      active
+                        ? "bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-sm"
+                        : "text-slate-600 hover:text-teal-700 hover:bg-white"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+            </div>
           </nav>
 
-          {/* Auth section + Book Now - pinned on the right, always keeps its full width */}
-          <div className="hidden xl:flex items-center shrink-0">
+          {/* Right cluster: auth + Book Now — fixed footprint, never grows with breakpoint */}
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
             {currentUser ? (
-              <div className="flex items-center gap-2 pl-3 border-l border-slate-200 shrink-0">
-                {/* Admin Button */}
-                {role === "admin" && (
-                  <Link
-                    to="/admin"
-                    className="px-3 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition-all duration-300 whitespace-nowrap text-sm"
-                  >
-                    Admin Panel
-                  </Link>
-                )}
-
-                {/* SysAdmin Button */}
-                {role === "sysadmin" && (
-                  <Link
-                    to="/sysadmin"
-                    className="px-3 py-2 rounded-xl bg-teal-100 text-teal-700 font-medium hover:bg-teal-200 transition-all duration-300 whitespace-nowrap text-sm"
-                  >
-                    SysAdmin Panel
-                  </Link>
-                )}
-                {role === "user" && (
-                  <Link
-                    to="/patient-dashboard"
-                    onClick={closeMobileMenu}
-                    className="px-3 py-2 rounded-xl bg-blue-100 text-blue-700 font-semibold whitespace-nowrap text-sm"
-                  >
-                    Patient Dashboard
-                  </Link>
-                )}
-                <span className="hidden 2xl:flex items-center gap-2 text-sm text-slate-600 whitespace-nowrap max-w-[160px]">
-                  <FiUser className="text-teal-600 shrink-0" />
-                  <span className="truncate">{name || currentUser.email}</span>
-                </span>
+              <div className="relative" ref={profileRef}>
                 <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-1 px-3 py-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 whitespace-nowrap text-sm"
+                  onClick={() => setProfileOpen((v) => !v)}
+                  className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-slate-200 bg-white hover:shadow-md transition-all duration-300"
                 >
-                  <FiLogOut size={16} />
-                  Log Out
+                  <span className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-teal-600 to-orange-500 text-white text-sm font-semibold shrink-0">
+                    {initial}
+                  </span>
+                  <span className="text-sm font-medium text-slate-700 max-w-[110px] truncate hidden xl:inline">
+                    {displayName}
+                  </span>
+                  <FiChevronDown
+                    size={16}
+                    className={`text-slate-400 transition-transform duration-300 ${
+                      profileOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-slate-100">
+                      <p className="text-sm font-semibold text-slate-800 truncate">
+                        {displayName}
+                      </p>
+                      {role && (
+                        <span className="inline-block mt-1 text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-teal-50 text-teal-700">
+                          {role}
+                        </span>
+                      )}
+                    </div>
+
+                    {panelLink && (
+                      <Link
+                        to={panelLink.to}
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-teal-700 transition-colors"
+                      >
+                        {role === "user" ? (
+                          <FiGrid size={16} />
+                        ) : (
+                          <FiShield size={16} />
+                        )}
+                        {panelLink.label}
+                      </Link>
+                    )}
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <FiLogOut size={16} />
+                      Log Out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="flex items-center gap-2 pl-3 border-l border-slate-200 shrink-0">
+              <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="px-3 py-2 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-slate-100 transition-all duration-300 whitespace-nowrap text-sm"
+                  className="px-3.5 py-2 rounded-full text-sm text-slate-600 hover:text-teal-700 hover:bg-white transition-all duration-300 whitespace-nowrap"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-3 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap text-sm"
+                  className="px-3.5 py-2 rounded-full bg-gradient-to-r from-teal-600 to-orange-600 text-white text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap"
                 >
                   Sign Up
                 </Link>
@@ -185,7 +224,7 @@ const Navbar = () => {
             <Link
               to="/book-appointment"
               onClick={closeMobileMenu}
-              className="ml-3 px-4 2xl:px-6 py-2.5 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 whitespace-nowrap text-sm 2xl:text-base shrink-0"
+              className="px-4 py-2.5 bg-gradient-to-r from-teal-600 to-orange-600 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 whitespace-nowrap"
             >
               Book Now
             </Link>
@@ -193,112 +232,103 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="xl:hidden p-3 sm:p-4 rounded-2xl bg-white shadow-lg text-teal-700 z-[60] transition-all duration-300 hover:shadow-2xl hover:scale-105 shrink-0"
+            className="lg:hidden p-3 rounded-2xl bg-white shadow-lg text-teal-700 z-[60] transition-all duration-300 hover:shadow-2xl hover:scale-105 shrink-0"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <FiX size={26} className="text-teal-700" />
+              <FiX size={24} className="text-teal-700" />
             ) : (
-              <FiMenu size={26} className="text-teal-700" />
+              <FiMenu size={24} className="text-teal-700" />
             )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         <div
-          className={`xl:hidden transition-all duration-500 ease-in-out overflow-hidden ${
+          className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${
             isOpen
               ? "max-h-[85vh] overflow-y-auto opacity-100 mt-4"
               : "max-h-0 opacity-0 mt-0"
           }`}
         >
-          <div className="bg-white rounded-3xl shadow-2xl border-2 border-slate-100 p-6">
-            <nav className="flex flex-col space-y-3">
+          <div className="bg-white rounded-3xl shadow-2xl border-2 border-slate-100 p-5">
+            {currentUser && (
+              <div className="flex items-center gap-3 px-3 py-3 mb-3 rounded-2xl bg-gradient-to-r from-teal-50 to-orange-50">
+                <span className="flex items-center justify-center h-11 w-11 rounded-full bg-gradient-to-br from-teal-600 to-orange-500 text-white text-base font-semibold shrink-0">
+                  {initial}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-800 truncate">
+                    {displayName}
+                  </p>
+                  {role && (
+                    <span className="inline-block mt-0.5 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white text-teal-700">
+                      {role}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <nav className="flex flex-col space-y-2">
               {navLinks.map((link, index) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   onClick={closeMobileMenu}
-                  className={`px-6 py-4 rounded-2xl transition-all duration-300 flex items-center justify-between ${
+                  className={`px-5 py-3.5 rounded-2xl transition-all duration-300 flex items-center justify-between ${
                     location.pathname === link.path
                       ? "bg-gradient-to-r from-teal-500 to-orange-500 text-white font-semibold shadow-lg"
                       : "bg-slate-50 text-slate-700 hover:bg-slate-100"
                   }`}
                   style={{
-                    transitionDelay: isOpen ? `${index * 50}ms` : "0ms",
+                    transitionDelay: isOpen ? `${index * 40}ms` : "0ms",
                   }}
                 >
                   <span>{link.name}</span>
-                  {location.pathname === link.path && (
-                    <FiHeart size={18} />
-                  )}
+                  {location.pathname === link.path && <FiHeart size={16} />}
                 </Link>
               ))}
 
-              {/* Auth section - mobile */}
-             {/* Auth section - mobile */}
-{currentUser ? (
-  <div className="mt-2 space-y-3">
+              {currentUser ? (
+                <div className="mt-1 space-y-2">
+                  {panelLink && (
+                    <Link
+                      to={panelLink.to}
+                      onClick={closeMobileMenu}
+                      className="flex items-center gap-2 justify-center w-full px-5 py-3.5 rounded-2xl bg-teal-50 text-teal-700 font-semibold"
+                    >
+                      {role === "user" ? (
+                        <FiGrid size={16} />
+                      ) : (
+                        <FiShield size={16} />
+                      )}
+                      {panelLink.label}
+                    </Link>
+                  )}
 
-    {role === "admin" && (
-      <Link
-        to="/admin"
-        onClick={closeMobileMenu}
-        className="block w-full px-6 py-3 rounded-2xl bg-orange-100 text-orange-700 font-semibold text-center"
-      >
-        Admin Panel
-      </Link>
-    )}
-
-    {role === "sysadmin" && (
-      <Link
-        to="/sysadmin-dashboard"
-        onClick={closeMobileMenu}
-        className="block w-full px-6 py-3 rounded-2xl bg-teal-100 text-teal-700 font-semibold text-center"
-      >
-        SysAdmin Dashboard
-      </Link>
-    )}
-    {role === "user" && (
-  <Link
-    to="/patient-dashboard"
-    onClick={closeMobileMenu}
-    className="block w-full px-6 py-3 rounded-2xl bg-blue-100 text-blue-700 font-medium text-center hover:bg-blue-200 transition-all duration-300"
-  >
-    Patient Dashboard
-  </Link>
-)}
-
-    <div className="px-6 py-4 rounded-2xl bg-slate-50 flex items-center justify-between gap-3">
-      <span className="flex items-center gap-2 text-sm text-slate-600 min-w-0">
-        <FiUser className="text-teal-600 shrink-0" />
-        <span className="truncate"> {name || currentUser.email}</span>
-      </span>
-
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-1 text-red-600 font-medium shrink-0"
-      >
-        <FiLogOut size={16} />
-        Log Out
-      </button>
-    </div>
-
-  </div>
-) : (
-                <div className="mt-2 flex gap-3">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 justify-center w-full px-5 py-3.5 rounded-2xl bg-red-50 text-red-600 font-semibold"
+                  >
+                    <FiLogOut size={16} />
+                    Log Out
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-1 flex gap-3">
                   <Link
                     to="/login"
                     onClick={closeMobileMenu}
-                    className="flex-1 px-6 py-4 rounded-2xl bg-slate-50 text-slate-700 font-medium text-center hover:bg-slate-100 transition-all duration-300"
+                    className="flex-1 px-5 py-3.5 rounded-2xl bg-slate-50 text-slate-700 font-medium text-center hover:bg-slate-100 transition-all duration-300"
                   >
                     Log In
                   </Link>
                   <Link
                     to="/signup"
                     onClick={closeMobileMenu}
-                    className="flex-1 px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold text-center shadow-lg"
+                    className="flex-1 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold text-center shadow-lg"
                   >
                     Sign Up
                   </Link>
@@ -308,7 +338,7 @@ const Navbar = () => {
               <Link
                 to="/book-appointment"
                 onClick={closeMobileMenu}
-                className="mt-4 px-6 py-4 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg text-center"
+                className="mt-3 px-5 py-3.5 bg-gradient-to-r from-teal-600 to-orange-600 text-white font-semibold rounded-2xl shadow-lg text-center"
               >
                 Book Your Appointment
               </Link>
