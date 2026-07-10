@@ -6,7 +6,7 @@ const WhatsAppIcon = () => {
   const [isHovered, setIsHovered] = useState(false);
   
   // List of public routes where the WhatsApp icon should appear
-  const publicRoutes = [
+  const allowedRoutes  = [
     "/",
     "/blog",
     "/blog/ergonomic",
@@ -19,14 +19,19 @@ const WhatsAppIcon = () => {
     "/contact-us",
     "/book-appointment",
     "/doorstep-physiotherapy",
+     "/patient-dashboard",
+  "/patient/profile",
+  "/sysadmin",
   ];
   
   // Check if current path is a public route
-  const isPublicRoute = publicRoutes.some(route => 
-    location.pathname === route || location.pathname.startsWith(route + "/")
-  );
-  
-  if (!isPublicRoute) return null;
+const isPublicRoute = allowedRoutes.some(
+  route =>
+    location.pathname === route ||
+    location.pathname.startsWith(route + "/")
+);
+
+if (!isPublicRoute) return null;
   
   return (
     <a
