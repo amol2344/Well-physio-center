@@ -4,15 +4,14 @@ import HeroImage from "../../assets/hero-image.png";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-slate-50 via-teal-50 to-orange-50 overflow-hidden pt-32">
-      {/* Background Decorations */}
+<section className="relative min-h-screen flex items-center bg-gradient-to-br from-slate-50 via-teal-50 to-orange-50 overflow-hidden pt-20">      {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full bg-gradient-to-r from-teal-300/30 to-orange-300/30 blur-3xl animate-pulse-slow"></div>
         <div className="absolute bottom-1/3 -right-20 w-[28rem] h-[28rem] rounded-full bg-gradient-to-r from-orange-300/30 to-teal-300/30 blur-3xl animate-pulse-slow animation-delay-2000"></div>
       </div>
 
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16">
+<div className="container mx-auto px-4 pt-6 pb-16 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-16">
           {/* Left Content */}
           <div className="lg:w-1/2 text-center lg:text-left">
             <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-teal-100 to-orange-100 rounded-full mb-8 border border-teal-200">
