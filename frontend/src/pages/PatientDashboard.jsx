@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";import {
   updateDoc,
   
 } from "firebase/firestore";
-
+import WhatsAppIcon from "../components/Shared/WhatsAppIcon";
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -379,7 +379,7 @@ View Profile
         </div>
 
       </div>
-
+<WhatsAppIcon />
     </div>
   );
 }

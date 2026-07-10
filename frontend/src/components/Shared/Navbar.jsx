@@ -275,7 +275,7 @@ const handleLogout = async () => {
                   </p>
                   {role && (
                     <span className="inline-block mt-0.5 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white text-teal-700">
-                      {role}{
+                      {
   role === "sysadmin"
     ? "Physiotherapist"
     : role === "patient"
