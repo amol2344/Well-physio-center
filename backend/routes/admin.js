@@ -4,7 +4,7 @@ const router = express.Router();
 const { db } = require("../firebaseAdmin");
 const { verifyToken, requireAdmin } = require("../middleware/auth");
 
-const VALID_ROLES = ["user", "admin", "sysadmin"];
+const VALID_ROLES = ["patient", "admin", "sysadmin"];
 
 // GET /api/admin/users — list all users (admin only)
 router.get("/users", verifyToken, requireAdmin, async (req, res) => {
@@ -23,7 +23,7 @@ router.post("/set-role", verifyToken, requireAdmin, async (req, res) => {
   const { targetUid, newRole } = req.body;
 
   if (!targetUid || !VALID_ROLES.includes(newRole)) {
-    return res.status(400).json({ error: "Invalid targetUid or newRole" });
+    return res.status(400).json({ error: "Invalid targetUid or new Role" });
   }
 
   // Prevent an admin from accidentally demoting/locking themselves out
