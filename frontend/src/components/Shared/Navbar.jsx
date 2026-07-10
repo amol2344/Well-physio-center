@@ -14,7 +14,8 @@ import logo from "../../assets/logo.png";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
-
+import { toast } from "react-toastify";
+import {  useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -22,6 +23,7 @@ const Navbar = () => {
   const location = useLocation();
   const navbarRef = useRef(null);
   const profileRef = useRef(null);
+  const navigate = useNavigate();
   const { currentUser, role, name } = useAuth();
   console.log("Navbar debug:", { currentUser: currentUser?.email, role });
 
@@ -68,12 +70,15 @@ const Navbar = () => {
 
   const closeMobileMenu = () => setIsOpen(false);
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    setProfileOpen(false);
-    closeMobileMenu();
-  };
+const handleLogout = async () => {
+  await signOut(auth);
 
+  toast.success("Logged out successfully!");
+
+  setProfileOpen(false);
+  closeMobileMenu();
+  navigate("/");
+};
   const panelLink =
     role === "admin"
       ? { to: "/admin", label: "Admin Panel", icon: FiShield }

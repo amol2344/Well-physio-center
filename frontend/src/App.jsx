@@ -11,6 +11,8 @@ import Chatbot from "./components/Shared/Chatbot";
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./components/Shared/Login";
 import Signup from "./components/Shared/Signup";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Public pages
 import Home from "./pages/Home";
@@ -51,9 +53,15 @@ function App() {
   return (
     
       <ErrorBoundary>
+        
         <div className="flex flex-col min-h-screen">
           <Navbar />
          <main className="flex-grow pt-24">
+          <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="colored"
+      />
             <ScrollToTop behavior="smooth" />
             <Routes>
               {/* Public routes */}

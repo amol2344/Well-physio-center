@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
-
+import { toast } from "react-toastify";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,8 +26,7 @@ export default function Login() {
         return;
       }
 
-      const role = snap.data().role || "user";
-
+const role = snap.data().role || "patient";
       switch (role) {
         case "admin":
           navigate("/admin");
@@ -37,10 +36,10 @@ export default function Login() {
           navigate("/sysadmin");
           break;
 
-        case "user":
-        default:
-          navigate("/patient-dashboard");
-          break;
+       case "patient":
+default:
+  navigate("/patient-dashboard");
+  break;
       }
     } catch (err) {
       console.error(err);
@@ -56,13 +55,15 @@ export default function Login() {
     setError("");
 
     try {
-      const result = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+     const result = await signInWithEmailAndPassword(
+  auth,
+  email,
+  password
+);
 
-      await redirectUser(result.user);
+toast.success("Login successful!");
+
+await redirectUser(result.user);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -78,7 +79,9 @@ export default function Login() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 
-      await redirectUser(result.user);
+toast.success("Login successful!");
+
+await redirectUser(result.user);
     } catch (err) {
       setError(err.message);
     } finally {
