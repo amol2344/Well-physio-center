@@ -25,8 +25,11 @@ import { db } from "../firebase/firebase";
 const API_BASE =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-const ROLES = ["user", "admin", "sysadmin"];
-
+const ROLES = [
+  { value: "patient", label: "Patient" },
+  { value: "admin", label: "Admin" },
+  { value: "sysadmin", label: "Physiotherapist" },
+];
 const TABS = [
   {
     id: "dashboard",
@@ -447,7 +450,7 @@ const completePlan = async (id) => {
               <div className="bg-white rounded-2xl shadow p-6">
 
                 <h3 className="text-slate-500">
-                  Total Users
+                 Total Registered Users
                 </h3>
 
                 <p className="text-4xl font-bold mt-3 text-teal-600">
@@ -603,14 +606,12 @@ const completePlan = async (id) => {
             <div className="flex justify-between items-center mb-6">
 
               <h2 className="text-2xl font-bold">
-
-                User Management
-
-              </h2>
+  Patient & Staff Management
+</h2>
 
               <input
                 type="text"
-                placeholder="Search users..."
+               placeholder="Search patients..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="border rounded-xl px-4 py-2 w-72"
@@ -683,25 +684,22 @@ const completePlan = async (id) => {
 
                         <td className="px-4 py-4">
 
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm
-
-                            ${
-                              user.role === "sysadmin"
-                                ? "bg-purple-100 text-purple-700"
-
-                                : user.role === "admin"
-                                ? "bg-orange-100 text-orange-700"
-
-                                : "bg-teal-100 text-teal-700"
-                            }
-
-                            `}
-                          >
-
-                            {user.role}
-
-                          </span>
+                         <span
+  className={`px-3 py-1 rounded-full text-sm
+  ${
+    user.role === "sysadmin"
+      ? "bg-purple-100 text-purple-700"
+      : user.role === "admin"
+      ? "bg-orange-100 text-orange-700"
+      : "bg-teal-100 text-teal-700"
+  }`}
+>
+  {user.role === "sysadmin"
+    ? "Physiotherapist"
+    : user.role === "patient"
+    ? "Patient"
+    : "Admin"}
+</span>
 
                         </td>
 
@@ -723,17 +721,10 @@ const completePlan = async (id) => {
                           >
 
                             {ROLES.map((role) => (
-
-                              <option
-                                key={role}
-                                value={role}
-                              >
-
-                                {role}
-
-                              </option>
-
-                            ))}
+  <option key={role.value} value={role.value}>
+    {role.label}
+  </option>
+))}
 
                           </select>
 

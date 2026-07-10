@@ -78,9 +78,9 @@ const Navbar = () => {
     role === "admin"
       ? { to: "/admin", label: "Admin Panel", icon: FiShield }
       : role === "sysadmin"
-      ? { to: "/sysadmin", label: "SysAdmin Panel", icon: FiShield }
+      ? { to: "/sysadmin", label: "Physiotherapist Panel", icon: FiShield }
       : role === "user"
-      ? { to: "/patient-dashboard", label: "Dashboard", icon: FiGrid }
+      ? { to: "/patient-dashboard", label: "Patient Dashboard", icon: FiGrid }
       : null;
 
   const displayName = name || currentUser?.email || "";
