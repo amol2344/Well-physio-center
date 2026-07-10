@@ -192,7 +192,15 @@ const Navbar = () => {
                         </p>
                         {role && (
                           <span className="inline-block mt-1 text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-teal-50 text-teal-700">
-                            {role}
+                           {
+  role === "sysadmin"
+    ? "Physiotherapist"
+    : role === "patient"
+    ? "Patient"
+    : role === "admin"
+    ? "Admin"
+    : role
+}
                           </span>
                         )}
                       </div>
@@ -262,7 +270,15 @@ const Navbar = () => {
                   </p>
                   {role && (
                     <span className="inline-block mt-0.5 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white text-teal-700">
-                      {role}
+                      {role}{
+  role === "sysadmin"
+    ? "Physiotherapist"
+    : role === "patient"
+    ? "Patient"
+    : role === "admin"
+    ? "Admin"
+    : role
+}
                     </span>
                   )}
                 </div>
