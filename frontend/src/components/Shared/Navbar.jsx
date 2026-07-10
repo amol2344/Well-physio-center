@@ -148,7 +148,7 @@ const Navbar = () => {
             <Link
               to="/book-appointment"
               onClick={closeMobileMenu}
-              className="px-4 py-2 bg-gradient-to-r from-teal-600 to-orange-600 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 whitespace-nowrap"
+              className="ml-4 px-4 py-2 bg-gradient-to-r from-teal-600 to-orange-600 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 whitespace-nowrap"
             >
               Book Now
             </Link>
