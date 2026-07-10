@@ -14,7 +14,7 @@ import logo from "../../assets/logo.png";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import {  useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);

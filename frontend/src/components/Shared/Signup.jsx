@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
-
+import toast from "react-hot-toast";
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,8 +50,6 @@ export default function Signup() {
       password
     );
 
-    console.log("✅ Auth User Created:", user.uid);
-
     await updateProfile(user, {
       displayName: name,
     });
@@ -61,6 +59,7 @@ export default function Signup() {
     await createUserDoc(user, name);
 
     console.log("✅ Firestore User Document Created");
+   toast.success("Account created successfully!");
 
     navigate("/");
 
