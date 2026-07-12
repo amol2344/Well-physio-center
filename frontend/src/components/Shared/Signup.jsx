@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";import { Link, useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -8,7 +7,11 @@ import {
 import {
   signOut,
 } from "firebase/auth";
-
+import {
+  
+  signInWithRedirect,
+  getRedirectResult,
+} from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
 import toast from "react-hot-toast";
@@ -20,7 +23,29 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+useEffect(() => {
+  const handleRedirect = async () => {
+    try {
+      const result = await getRedirectResult(auth);
 
+      if (result?.user) {
+        await createUserDoc(result.user, result.user.displayName);
+
+        await signOut(auth);
+
+        toast.success(
+          "Account created successfully! Please log in to continue."
+        );
+
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  handleRedirect();
+}, []);
   // Creates the Firestore profile doc. Every new user defaults to "user" —
   // role upgrades only ever happen through the backend admin endpoint.
   const createUserDoc = async (user, displayName) => {
@@ -84,25 +109,33 @@ export default function Signup() {
   setLoading(true);
 
   try {
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
+
     const { user } = await signInWithPopup(auth, googleProvider);
 
-    // Create Firestore document if it doesn't exist
     await createUserDoc(user, user.displayName);
 
-    // Sign out after successful signup
     await signOut(auth);
 
-    // Show success message
     toast.success(
       "Account created successfully! Please log in to continue."
     );
 
-    // Redirect to Login page
     navigate("/login");
 
   } catch (err) {
     console.error("Google Signup Error:", err);
-    setError(err.message);
+
+    if (err.code !== "auth/popup-closed-by-user") {
+      setError(err.message);
+    }
+
   } finally {
     setLoading(false);
   }
@@ -168,13 +201,14 @@ export default function Signup() {
           <div className="flex-1 h-px bg-slate-200" />
         </div>
 
-        <button
-          onClick={handleGoogleSignup}
-          disabled={loading}
-          className="w-full py-3 border-2 border-slate-200 rounded-xl font-medium text-slate-700 hover:bg-slate-50 transition-all duration-300 disabled:opacity-60"
-        >
-          Continue with Google
-        </button>
+       <button
+  type="button"
+  onClick={handleGoogleSignup}
+  disabled={loading}
+  className="w-full py-3 border-2 border-slate-200 rounded-xl font-medium text-slate-700 hover:bg-slate-50 transition-all duration-300 disabled:opacity-60"
+>
+  Continue with Google
+</button>
 
         <p className="text-center text-sm text-slate-500 mt-6">
           Already have an account?{" "}
