@@ -48,30 +48,23 @@ useEffect(() => {
 }, []);
   // Creates the Firestore profile doc. Every new user defaults to "user" —
   // role upgrades only ever happen through the backend admin endpoint.
- const createUserDoc = async (user, displayName) => {
-  try {
-    console.log("Creating Firestore user...");
+const createUserDoc = async (user, displayName) => {
+  console.log("CREATE USER DOC START");
 
-    const userRef = doc(db, "users", user.uid);
+  const userRef = doc(db, "users", user.uid);
 
-    const existing = await getDoc(userRef);
-    console.log("Existing:", existing.exists());
+  await setDoc(
+    userRef,
+    {
+      name: displayName || "",
+      email: user.email,
+      role: "patient",
+      createdAt: new Date().toISOString(),
+    },
+    { merge: true }
+  );
 
-    if (!existing.exists()) {
-      await setDoc(userRef, {
-        name: displayName || user.displayName || "",
-        email: user.email,
-        role: "patient",
-        createdAt: new Date().toISOString(),
-      });
-
-      console.log("Firestore document created successfully");
-    }
-  } catch (err) {
-    console.log("Firestore Error Code:", err.code);
-    console.log("Firestore Error:", err.message);
-    throw err;
-  }
+  console.log("CREATE USER DOC END");
 };
 
   const handleSignup = async (e) => {
@@ -117,40 +110,26 @@ useEffect(() => {
   }
 };
 
- const handleGoogleSignup = async () => {
-  setError("");
-  setLoading(true);
+const handleGoogleSignup = async () => {
+  console.log("BUTTON CLICKED");
 
   try {
- const { user } = await signInWithPopup(auth, googleProvider);
+    const { user } = await signInWithPopup(auth, googleProvider);
 
-console.log("Google User:", user);
+    console.log("GOOGLE LOGIN SUCCESS");
+    console.log(user.uid);
 
-try {
-  await createUserDoc(user, user.displayName);
-  console.log("Firestore document created");
-} catch (e) {
-  console.error("Firestore creation failed:", e);
-}
-  await signOut(auth);
+    await createUserDoc(user, user.displayName);
 
-  toast.success(
-    "Account created successfully! Please log in to continue."
-  );
+    console.log("AFTER createUserDoc");
 
-  navigate("/login");
+    await signOut(auth);
 
-} catch (err) {
-  if (
-    err.code === "auth/popup-blocked" ||
-    err.code === "auth/popup-closed-by-user"
-  ) {
-    await signInWithRedirect(auth, googleProvider);
-    return;
+    navigate("/login");
+  } catch (err) {
+    console.log("ERROR:", err.code);
+    console.log(err);
   }
-
-  setError(err.message);
-}
 };
 
   return (
