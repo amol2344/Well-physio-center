@@ -956,7 +956,7 @@ className="border rounded-2xl p-6 hover:shadow-md transition"
 
 <h3 className="text-xl font-semibold">
 
-{plan.name}
+{plan.plan}
 
 </h3>
 
@@ -1029,19 +1029,24 @@ New Request
 </div>
 
 <div>
+  <p>
+    <b>Status</b>
+  </p>
 
-<p>
-
-<b>Status</b>
-
-</p>
-
-<span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-
-Pending
-
-</span>
-
+  <span
+    className={`px-3 py-1 rounded-full text-sm font-medium
+      ${
+        plan.status === "Pending"
+          ? "bg-yellow-100 text-yellow-700"
+          : plan.status === "Active"
+          ? "bg-green-100 text-green-700"
+          : plan.status === "Completed"
+          ? "bg-blue-100 text-blue-700"
+          : "bg-red-100 text-red-700"
+      }`}
+  >
+    {plan.status || "Pending"}
+  </span>
 </div>
 
 </div>
