@@ -5,6 +5,10 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
+import {
+  signOut,
+} from "firebase/auth";
+
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
 import toast from "react-hot-toast";
@@ -54,14 +58,18 @@ export default function Signup() {
       displayName: name,
     });
 
-    console.log("✅ Profile Updated");
-
     await createUserDoc(user, name);
 
-    console.log("✅ Firestore User Document Created");
-   toast.success("Account created successfully!");
+    // Sign out the newly created user
+    await signOut(auth);
 
-    navigate("/");
+    // Show success message
+    toast.success(
+      "Account created successfully! Please log in to continue."
+    );
+
+    // Redirect to Login page
+    navigate("/login");
 
   } catch (err) {
     console.error("Signup Error:", err);
