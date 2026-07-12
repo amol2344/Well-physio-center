@@ -115,27 +115,35 @@ const createUserDoc = async (user, displayName) => {
 };
 
 const handleGoogleSignup = async () => {
-  console.log("BUTTON CLICKED");
+  setError("");
+  setLoading(true);
 
   try {
+    console.log("1. Starting Google Sign In");
+
     const { user } = await signInWithPopup(auth, googleProvider);
 
-    console.log("GOOGLE LOGIN SUCCESS");
-    console.log(user.uid);
+    console.log("2. Google Sign In Success");
+    console.log(user);
 
-   await createUserDoc(user, user.displayName);
+    console.log("3. Creating Firestore document...");
+    await createUserDoc(user, user.displayName);
 
-// Give Firestore a moment to finish writing
-await new Promise(resolve => setTimeout(resolve, 500));
+    console.log("4. Firestore document created");
 
-await signOut(auth);
+    await signOut(auth);
 
-toast.success("Account created successfully! Please log in.");
+    toast.success("Account created successfully! Please log in.");
 
-navigate("/login");
+    navigate("/login");
   } catch (err) {
-    console.log("ERROR:", err.code);
-    console.log(err);
+    console.error("Google Error Code:", err.code);
+    console.error("Google Error Message:", err.message);
+    console.error(err);
+
+    setError(err.message);
+  } finally {
+    setLoading(false);
   }
 };
 
