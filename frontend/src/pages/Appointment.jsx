@@ -12,7 +12,6 @@ import {
   FiAlertCircle,
   FiMapPin,
   FiArrowRight,
-  
   FiArrowLeft,
   FiClock,
   FiPhoneCall,
@@ -20,7 +19,23 @@ import {
 } from "react-icons/fi";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import {
+  FaBrain,
+  FaHandPaper,
+  FaWalking,
+  FaHeartbeat,
+} from "react-icons/fa";
 
+import {
+  GiShoulderArmor,
+  GiLeg,
+  GiFootprint,
+} from "react-icons/gi";
+
+import {
+  MdAccessibility,
+  MdOutlineAirlineSeatReclineNormal,
+} from "react-icons/md";
 
 // InfoCard Component with Prop Validation
 const InfoCard = ({ icon: Icon, title, children, delay = 0 }) => (
@@ -253,8 +268,9 @@ const PainSymptomsStep = ({ bodyAreas, selectedPoints, errors, togglePoint, pain
                 : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
             }`}
           >
-            <span className="text-2xl mb-2">{area.icon}</span>
-            <span className="text-sm font-medium">{area.name}</span>
+<span className="text-3xl mb-2 flex items-center justify-center text-blue-600">
+  {area.icon}
+</span>            <span className="text-sm font-medium">{area.name}</span>
           </motion.button>
         ))}
       </div>
@@ -488,12 +504,20 @@ const Appointment = () => {
   // API URL
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   const steps = ["Personal Information", "Pain & Symptoms", "Medical History"];
-  const bodyAreas = [
-    { name: "Head", icon: "🧠" }, { name: "Neck", icon: "👔" }, { name: "Shoulders", icon: "💪" },
-    { name: "Back", icon: "🔼" }, { name: "Arms", icon: "🦵" }, { name: "Hands", icon: "✋" },
-    { name: "Chest", icon: "❤" }, { name: "Stomach", icon: "🍎" }, { name: "Hips", icon: "🔄" },
-    { name: "Legs", icon: "🚶" }, { name: "Knees", icon: "🦵" }, { name: "Feet", icon: "👣" },
-  ];
+const bodyAreas = [
+  { name: "Head", icon: <FaBrain /> },
+  { name: "Neck", icon: <MdAccessibility /> },
+  { name: "Shoulders", icon: <GiShoulderArmor /> },
+  { name: "Back", icon: <MdOutlineAirlineSeatReclineNormal /> },
+  { name: "Arms", icon: <FaWalking /> },
+  { name: "Hands", icon: <FaHandPaper /> },
+  { name: "Chest", icon: <FaHeartbeat /> },
+  { name: "Stomach", icon: "🫃" },
+  { name: "Hips", icon: "🦴" },
+  { name: "Legs", icon: <GiLeg /> },
+  { name: "Knees", icon: "🦿" },
+  { name: "Feet", icon: <GiFootprint /> },
+];
 
 
   // Auto-fill email from the logged-in Firebase account so the appointment
