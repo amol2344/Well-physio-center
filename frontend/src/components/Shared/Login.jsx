@@ -7,8 +7,7 @@ import {
 import { doc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
 import toast from "react-hot-toast";
-import {   setDoc } from "firebase/firestore";
-import {
+import { setDoc } from "firebase/firestore";import {
   
   signInWithRedirect,
   getRedirectResult,
@@ -96,7 +95,17 @@ await redirectUser(result.user);
 
   try {
     const result = await signInWithPopup(auth, googleProvider);
+const userRef = doc(db, "users", result.user.uid);
+const snap = await getDoc(userRef);
 
+if (!snap.exists()) {
+  await setDoc(userRef, {
+    name: result.user.displayName || "",
+    email: result.user.email,
+    role: "patient",
+    createdAt: new Date().toISOString(),
+  });
+}
     await createUserDocIfNeeded(result.user);
 
     toast.success("Login successful!");
