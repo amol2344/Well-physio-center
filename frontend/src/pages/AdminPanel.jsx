@@ -818,13 +818,13 @@ New
 
 <p>
 
-<b>Phone</b>
+<b>Email</b>
 
 </p>
 
 <p className="text-slate-600">
 
-{contact.phone || "-"}
+{contact.email || "-"}
 
 </p>
 
