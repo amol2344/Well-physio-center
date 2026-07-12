@@ -48,9 +48,15 @@ useEffect(() => {
 }, []);
   // Creates the Firestore profile doc. Every new user defaults to "user" —
   // role upgrades only ever happen through the backend admin endpoint.
-  const createUserDoc = async (user, displayName) => {
+ const createUserDoc = async (user, displayName) => {
+  try {
+    console.log("Creating Firestore user...");
+
     const userRef = doc(db, "users", user.uid);
+
     const existing = await getDoc(userRef);
+    console.log("Existing:", existing.exists());
+
     if (!existing.exists()) {
       await setDoc(userRef, {
         name: displayName || user.displayName || "",
@@ -58,8 +64,15 @@ useEffect(() => {
         role: "patient",
         createdAt: new Date().toISOString(),
       });
+
+      console.log("Firestore document created successfully");
     }
-  };
+  } catch (err) {
+    console.log("Firestore Error Code:", err.code);
+    console.log("Firestore Error:", err.message);
+    throw err;
+  }
+};
 
   const handleSignup = async (e) => {
   e.preventDefault();
