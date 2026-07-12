@@ -11,59 +11,92 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [profile, setProfile] = useState(null); // { name, email, role }
+  const [profile, setProfile] = useState(null);
+
+  // App initialization
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let unsubProfile = null;
+  // Firestore profile loaded
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
-    const unsubAuth = onAuthStateChanged(auth, (user) => {
+  useEffect(() => {
+    let unsubscribeProfile = null;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
 
-      if (unsubProfile) {
-        unsubProfile();
-        unsubProfile = null;
+      // Reset whenever auth state changes
+      setProfile(null);
+      setProfileLoaded(false);
+
+      // Stop previous Firestore listener
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+        unsubscribeProfile = null;
       }
 
       if (user) {
-        // Live-subscribe to the user's Firestore doc so role changes
-        // (e.g. an admin promoting them) reflect immediately without re-login.
         const userRef = doc(db, "users", user.uid);
-        unsubProfile = onSnapshot(
-  userRef,
-  (snap) => {
-    console.log("User profile:", snap.data());
 
-    setProfile(snap.exists() ? snap.data() : null);
-    setLoading(false);
-  },
-  (error) => {
-    console.error("User profile error:", error);
-    setLoading(false);
-  }
-);
+        unsubscribeProfile = onSnapshot(
+          userRef,
+          (snap) => {
+            if (snap.exists()) {
+              setProfile(snap.data());
+            } else {
+              setProfile(null);
+            }
+
+            setProfileLoaded(true);
+            setLoading(false);
+          },
+          (error) => {
+            console.error("User profile error:", error);
+
+            setProfile(null);
+            setProfileLoaded(true);
+            setLoading(false);
+          }
+        );
       } else {
+        // Logged out
         setProfile(null);
+        setProfileLoaded(true);
         setLoading(false);
       }
     });
 
     return () => {
-      unsubAuth();
-      if (unsubProfile) unsubProfile();
+      unsubscribeAuth();
+
+      if (unsubscribeProfile) {
+        unsubscribeProfile();
+      }
     };
   }, []);
 
   const value = {
     currentUser,
-    name: profile?.name || currentUser?.displayName || "",
-    role: profile?.role || "patient",
     profile,
+
+    name: currentUser
+      ? profile?.name || currentUser.displayName || ""
+      : "",
+
+    email: currentUser?.email || "",
+
+  role:
+  currentUser && profileLoaded
+    ? profile?.role || "patient"
+    : null,
+
+    loading,
+    profileLoaded,
   };
 
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
+      <AuthContext.Provider value={value}>
+    {children}
+  </AuthContext.Provider>
   );
 }

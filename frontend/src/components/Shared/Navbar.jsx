@@ -24,8 +24,12 @@ const Navbar = () => {
   const navbarRef = useRef(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
-  const { currentUser, role, name } = useAuth();
-  console.log("Navbar debug:", { currentUser: currentUser?.email, role });
+const {
+  currentUser,
+  role,
+  name,
+  profileLoaded,
+} = useAuth();  console.log("Navbar debug:", { currentUser: currentUser?.email, role });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -166,7 +170,7 @@ const handleLogout = async () => {
 
           {/* Right cluster: auth + Book Now — fixed footprint, never grows with breakpoint */}
           <div className="hidden lg:flex items-center gap-2 shrink-0">
-            {currentUser ? (
+           {!profileLoaded ? null : currentUser ? (
               <>
                 {panelLink && (
                   <Link
@@ -269,7 +273,7 @@ const handleLogout = async () => {
           }`}
         >
           <div className="bg-white rounded-3xl shadow-2xl border-2 border-slate-100 p-4">
-            {currentUser && (
+            {profileLoaded && currentUser && (
               <div className="flex items-center gap-3 px-3 py-2.5 mb-2.5 rounded-2xl bg-gradient-to-r from-teal-50 to-orange-50">
                 <span className="flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-teal-600 to-orange-500 text-white text-sm font-semibold shrink-0">
                   {initial}
@@ -315,7 +319,7 @@ const handleLogout = async () => {
                 </Link>
               ))}
 
-              {currentUser ? (
+             {!profileLoaded ? null : currentUser ? (
                 <div className="mt-1 space-y-1.5">
                   {panelLink && (
                     <Link
