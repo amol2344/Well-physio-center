@@ -40,8 +40,9 @@ useEffect(() => {
         navigate("/login");
       }
     } catch (err) {
-      console.error(err);
-    }
+  console.error("Redirect Error:", err.code);
+  console.error(err.message);
+}
   };
 
   handleRedirect();
@@ -49,22 +50,25 @@ useEffect(() => {
   // Creates the Firestore profile doc. Every new user defaults to "user" —
   // role upgrades only ever happen through the backend admin endpoint.
 const createUserDoc = async (user, displayName) => {
-  console.log("CREATE USER DOC START");
+  try {
+    const userRef = doc(db, "users", user.uid);
 
-  const userRef = doc(db, "users", user.uid);
+    await setDoc(
+      userRef,
+      {
+        name: displayName || user.displayName || "",
+        email: user.email,
+        role: "patient",
+        createdAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
 
-  await setDoc(
-    userRef,
-    {
-      name: displayName || "",
-      email: user.email,
-      role: "patient",
-      createdAt: new Date().toISOString(),
-    },
-    { merge: true }
-  );
-
-  console.log("CREATE USER DOC END");
+    console.log("✅ Firestore document created/updated");
+  } catch (err) {
+    console.error("❌ Firestore Error:", err.code, err.message);
+    throw err;
+  }
 };
 
   const handleSignup = async (e) => {
@@ -119,13 +123,16 @@ const handleGoogleSignup = async () => {
     console.log("GOOGLE LOGIN SUCCESS");
     console.log(user.uid);
 
-    await createUserDoc(user, user.displayName);
+   await createUserDoc(user, user.displayName);
 
-    console.log("AFTER createUserDoc");
+// Give Firestore a moment to finish writing
+await new Promise(resolve => setTimeout(resolve, 500));
 
-    await signOut(auth);
+await signOut(auth);
 
-    navigate("/login");
+toast.success("Account created successfully! Please log in.");
+
+navigate("/login");
   } catch (err) {
     console.log("ERROR:", err.code);
     console.log(err);
