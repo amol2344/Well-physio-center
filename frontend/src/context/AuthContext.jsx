@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     name: profile?.name || currentUser?.displayName || "",
-    role: profile?.role || "user",
+    role: profile?.role || "patient",
     profile,
   };
 

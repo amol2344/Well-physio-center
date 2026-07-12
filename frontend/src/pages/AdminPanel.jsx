@@ -684,7 +684,7 @@ const completePlan = async (id) => {
 
                         <td className="px-4 py-4">
 
-                         <span
+                      <span
   className={`px-3 py-1 rounded-full text-sm ${
     user.role === "sysadmin"
       ? "bg-purple-100 text-purple-700"

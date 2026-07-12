@@ -84,7 +84,7 @@ const handleLogout = async () => {
       ? { to: "/admin", label: "Admin Panel", icon: FiShield }
       : role === "sysadmin"
       ? { to: "/sysadmin", label: "Physiotherapist Panel", icon: FiShield }
-      : role === "user"
+      : role === "patient"
       ? { to: "/patient-dashboard", label: "Patient Dashboard", icon: FiGrid }
       : null;
 

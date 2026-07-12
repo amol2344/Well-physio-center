@@ -108,7 +108,7 @@ function App() {
 /><Route
   path="/patient-dashboard"
   element={
-    <RequireRole allowed={["user"]}>
+    <RequireRole allowed={["patient"]}>
       <PatientDashboard />
     </RequireRole>
   }

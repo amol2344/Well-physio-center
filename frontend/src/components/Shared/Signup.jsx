@@ -30,7 +30,7 @@ export default function Signup() {
       await setDoc(userRef, {
         name: displayName || user.displayName || "",
         email: user.email,
-        role: "user",
+        role: "patient",
         createdAt: new Date().toISOString(),
       });
     }
@@ -79,19 +79,34 @@ export default function Signup() {
   }
 };
 
-  const handleGoogleSignup = async () => {
-    setError("");
-    setLoading(true);
-    try {
-      const { user } = await signInWithPopup(auth, googleProvider);
-      await createUserDoc(user, user.displayName);
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const handleGoogleSignup = async () => {
+  setError("");
+  setLoading(true);
+
+  try {
+    const { user } = await signInWithPopup(auth, googleProvider);
+
+    // Create Firestore document if it doesn't exist
+    await createUserDoc(user, user.displayName);
+
+    // Sign out after successful signup
+    await signOut(auth);
+
+    // Show success message
+    toast.success(
+      "Account created successfully! Please log in to continue."
+    );
+
+    // Redirect to Login page
+    navigate("/login");
+
+  } catch (err) {
+    console.error("Google Signup Error:", err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
