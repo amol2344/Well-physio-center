@@ -122,9 +122,16 @@ useEffect(() => {
   setLoading(true);
 
   try {
-  const { user } = await signInWithPopup(auth, googleProvider);
+ const { user } = await signInWithPopup(auth, googleProvider);
 
+console.log("Google User:", user);
+
+try {
   await createUserDoc(user, user.displayName);
+  console.log("Firestore document created");
+} catch (e) {
+  console.error("Firestore creation failed:", e);
+}
   await signOut(auth);
 
   toast.success(
