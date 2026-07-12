@@ -121,7 +121,7 @@ useEffect(() => {
   setError("");
   setLoading(true);
 
- try {
+  try {
   const { user } = await signInWithPopup(auth, googleProvider);
 
   await createUserDoc(user, user.displayName);
@@ -144,6 +144,8 @@ useEffect(() => {
 
   setError(err.message);
 }
+};
+
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm bg-white p-8 rounded-3xl shadow-2xl border-2 border-slate-100">
