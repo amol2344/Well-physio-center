@@ -989,9 +989,7 @@ New Request
 </p>
 
 <p className="font-semibold text-teal-600">
-
-{plan.plan || "-"}
-
+  {plan["plan"]}
 </p>
 
 </div>
