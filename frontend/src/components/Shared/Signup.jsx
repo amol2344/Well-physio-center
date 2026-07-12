@@ -121,39 +121,29 @@ useEffect(() => {
   setError("");
   setLoading(true);
 
-  try {
-    const isMobile =
-      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+ try {
+  const { user } = await signInWithPopup(auth, googleProvider);
 
-    if (isMobile) {
-      await signInWithRedirect(auth, googleProvider);
-      return;
-    }
+  await createUserDoc(user, user.displayName);
+  await signOut(auth);
 
-    const { user } = await signInWithPopup(auth, googleProvider);
+  toast.success(
+    "Account created successfully! Please log in to continue."
+  );
 
-    await createUserDoc(user, user.displayName);
+  navigate("/login");
 
-    await signOut(auth);
-
-    toast.success(
-      "Account created successfully! Please log in to continue."
-    );
-
-    navigate("/login");
-
-  } catch (err) {
-    console.error("Google Signup Error:", err);
-
-    if (err.code !== "auth/popup-closed-by-user") {
-      setError(err.message);
-    }
-
-  } finally {
-    setLoading(false);
+} catch (err) {
+  if (
+    err.code === "auth/popup-blocked" ||
+    err.code === "auth/popup-closed-by-user"
+  ) {
+    await signInWithRedirect(auth, googleProvider);
+    return;
   }
-};
 
+  setError(err.message);
+}
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm bg-white p-8 rounded-3xl shadow-2xl border-2 border-slate-100">
