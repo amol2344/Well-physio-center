@@ -814,21 +814,7 @@ New
 
 <div className="grid md:grid-cols-2 gap-4 mt-5">
 
-<div>
 
-<p>
-
-<b>Email</b>
-
-</p>
-
-<p className="text-slate-600">
-
-{contact.email || "-"}
-
-</p>
-
-</div>
 
 <div>
 
@@ -956,7 +942,7 @@ className="border rounded-2xl p-6 hover:shadow-md transition"
 
 <h3 className="text-xl font-semibold">
 
-{plan.plan}
+{plan.name}
 
 </h3>
 
