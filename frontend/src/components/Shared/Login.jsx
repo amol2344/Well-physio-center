@@ -7,6 +7,7 @@ import {
 import { doc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
 import toast from "react-hot-toast";
+import {   setDoc } from "firebase/firestore";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,7 +47,19 @@ default:
       navigate("/");
     }
   };
+const createUserDocIfNeeded = async (user) => {
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
 
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      name: user.displayName || "",
+      email: user.email,
+      role: "patient",
+      createdAt: new Date().toISOString(),
+    });
+  }
+};
   // Email Login
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -72,22 +85,24 @@ await redirectUser(result.user);
   };
 
   // Google Login
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError("");
+ const handleGoogleLogin = async () => {
+  setLoading(true);
+  setError("");
 
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
 
-toast.success("Login successful!");
+    await createUserDocIfNeeded(result.user);
 
-await redirectUser(result.user);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success("Login successful!");
+
+    await redirectUser(result.user);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
