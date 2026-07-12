@@ -153,9 +153,9 @@ const handleGoogleSignup = async () => {
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm bg-white p-8 rounded-3xl shadow-2xl border-2 border-slate-100">
-        <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-teal-700 to-orange-600 bg-clip-text text-transparent mb-6">
-          Create Account
-        </h2>
+        <h2 style={{ color: "red" }}>
+THIS IS NEW BUILD
+</h2>
 
         <form onSubmit={handleSignup} className="space-y-4">
           <input
