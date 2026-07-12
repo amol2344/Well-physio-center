@@ -133,7 +133,7 @@ const handleGoogleSignup = async () => {
 
     await signOut(auth);
 
-    toast.success("Account created successfully! Please log in.");
+    toast.success("Account created successfully!! Please log in.");
 
     navigate("/login");
   } catch (err) {
