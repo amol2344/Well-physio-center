@@ -685,8 +685,7 @@ const completePlan = async (id) => {
                         <td className="px-4 py-4">
 
                          <span
-  className={`px-3 py-1 rounded-full text-sm
-  ${
+  className={`px-3 py-1 rounded-full text-sm ${
     user.role === "sysadmin"
       ? "bg-purple-100 text-purple-700"
       : user.role === "admin"
@@ -696,10 +695,11 @@ const completePlan = async (id) => {
 >
   {user.role === "sysadmin"
     ? "Physiotherapist"
-    : user.role === "patient"
-    ? "Patient"
-    : "Admin"}
+    : user.role === "admin"
+    ? "Admin"
+    : "Patient"}
 </span>
+
 
                         </td>
 
