@@ -12,6 +12,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
 } from "firebase/auth";
+
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
 import toast from "react-hot-toast";
@@ -122,28 +123,34 @@ const handleGoogleSignup = async () => {
   setLoading(true);
 
   try {
-    console.log("1. Starting Google Sign In");
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
 
     const { user } = await signInWithPopup(auth, googleProvider);
 
-    console.log("2. Google Sign In Success");
-    console.log(user);
-
-    console.log("3. Creating Firestore document...");
     await createUserDoc(user, user.displayName);
-
-    console.log("4. Firestore document created");
 
     await signOut(auth);
 
-    toast.success("Account created successfully!! Please log in.");
+    toast.success("Account created successfully! Please log in.");
 
     navigate("/login");
-  } catch (err) {
-    console.error("Google Error Code:", err.code);
-    console.error("Google Error Message:", err.message);
-    console.error(err);
 
+  } catch (err) {
+    if (
+      err.code === "auth/popup-blocked" ||
+      err.code === "auth/popup-closed-by-user"
+    ) {
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
+
+    console.error(err);
     setError(err.message);
   } finally {
     setLoading(false);
