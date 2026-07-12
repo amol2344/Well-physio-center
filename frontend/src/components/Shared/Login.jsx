@@ -8,6 +8,11 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, googleProvider, db } from "../../firebase/firebase";
 import toast from "react-hot-toast";
 import {   setDoc } from "firebase/firestore";
+import {
+  
+  signInWithRedirect,
+  getRedirectResult,
+} from "firebase/auth";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -95,14 +100,42 @@ await redirectUser(result.user);
     await createUserDocIfNeeded(result.user);
 
     toast.success("Login successful!");
-
     await redirectUser(result.user);
+
   } catch (err) {
+    if (
+      err.code === "auth/popup-closed-by-user" ||
+      err.code === "auth/popup-blocked"
+    ) {
+      // Fallback for mobile and browsers that block popups
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
+
+    console.error(err);
     setError(err.message);
   } finally {
     setLoading(false);
   }
 };
+useEffect(() => {
+  const handleRedirect = async () => {
+    try {
+      const result = await getRedirectResult(auth);
+
+      if (result?.user) {
+        await createUserDocIfNeeded(result.user);
+
+        toast.success("Login successful!");
+        await redirectUser(result.user);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  handleRedirect();
+}, []);
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
