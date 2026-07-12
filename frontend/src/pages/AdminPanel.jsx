@@ -989,7 +989,9 @@ New Request
 </p>
 
 <p className="font-semibold text-teal-600">
-  {JSON.stringify(plan)}
+
+{plan.planName || "-"}
+
 </p>
 
 </div>
