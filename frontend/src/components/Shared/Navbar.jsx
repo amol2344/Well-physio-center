@@ -71,13 +71,18 @@ const Navbar = () => {
   const closeMobileMenu = () => setIsOpen(false);
 
 const handleLogout = async () => {
-  await signOut(auth);
+  try {
+    await signOut(auth);
 
-  toast.success("Logged out successfully!");
+    toast.success("Logged out successfully!");
 
-  setProfileOpen(false);
-  closeMobileMenu();
-  navigate("/");
+    setProfileOpen(false);
+    closeMobileMenu();
+
+    navigate("/login", { replace: true });
+  } catch (error) {
+    toast.error(error.message);
+  }
 };
   const panelLink =
     role === "admin"

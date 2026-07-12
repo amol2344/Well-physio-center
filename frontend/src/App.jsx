@@ -114,8 +114,12 @@ function App() {
   }
 />
 <Route
-    path="/patient/profile"
-    element={<PatientProfile />}
+  path="/patient/profile"
+  element={
+    <RequireRole allowed={["patient"]}>
+      <PatientProfile />
+    </RequireRole>
+  }
 />
               {/* 404 */}
               <Route path="*" element={withLoader(NotFound)} />

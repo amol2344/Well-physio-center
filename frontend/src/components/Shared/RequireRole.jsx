@@ -1,12 +1,18 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import Loader from "../Shared/Loader";
 
-// Usage: <RequireRole allowed={["admin"]}><AdminPanel /></RequireRole>
-// Also handles the base "must be logged in at all" case automatically.
 export default function RequireRole({ allowed, children }) {
-  const { currentUser, role } = useAuth();
+  const { currentUser, role, loading } = useAuth();
 
-  console.log("RequireRole debug:", { currentUser, role, allowed });
+  // Wait until Firebase finishes checking authentication
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader />
+      </div>
+    );
+  }
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
