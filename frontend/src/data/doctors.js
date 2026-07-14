@@ -94,14 +94,14 @@ export const doctors = [
       "Kinesio Taping & Manual Therapy",
     ],
     experience: "8+ years",
-    certificate: DrCertificateImage,
+    
     education: "Master's in Physiotherapy - Sports (MPT)",
     certifications: [
       "Certified Sports Physiotherapist",
       "Kinesio Taping Practitioner",
     ],
     contact: {
-      phone: "+91-8460286466",
+      phone: "+91-9480186456",
       hours: "Mon - Sat: Open until 8:00 PM",
     },
     address:
@@ -147,14 +147,14 @@ export const doctors = [
       "Breathing Exercises & Pulmonary Rehab",
     ],
     experience: "10+ years",
-    certificate: DrCertificateImage,
+
     education: "Master's in Physiotherapy - Cardiopulmonary (MPT)",
     certifications: [
       "Certified Cardiac Rehabilitation Specialist",
       "Geriatric Care Physiotherapy Certification",
     ],
     contact: {
-      phone: "+91-8460286466",
+      phone: "+91-8690510539",
       hours: "Mon - Sat: Open until 8:00 PM",
     },
     address:
